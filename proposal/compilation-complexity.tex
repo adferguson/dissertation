@@ -1,0 +1,89 @@
+\section{Compiler Complexity}
+\label{sec:compiler-complexity}
+
+To realize a policy tree in OpenFlow hardware, we have to compile it
+to flow tables for each switch. We use a variation of
+Hierarchical Flow Tables (HFT)~\cite{Ferguson:2012b}. A direct
+implementation of the HFT algorithm produces flow tables of size
+$O(2^n)$, where $n$ is the size of the policy tree. The earlier
+algorithm is therefore useless on all but trivial policies.  However,
+we make two changes that greatly reduce the complexity:
+the modified algorithm yields flow tables
+of size $O(n^2)$ in $O(n^2)$ time. This chapter is an overview of our
+results. 
+
+OpenFlow flow tables are simple linear
+sequences of patterns and actions. A flow can match several,
+overlapping policy atoms in a policy tree and trigger
+conflict-resolution that combines their policies. However, in an
+OpenFlow flow table, a flow will only trigger the action of the
+highest-priority matching pattern.
+
+For example, suppose the policy tree has two atoms with the following
+flowgroups:
+\[
+\begin{array}{l}
+\paneshare{X}{Y}{\texttt{tcp}}{\star}{\star} \\
+\paneshare{\star}{\star}{\texttt{tcp}}{\star}{\texttt{80}}
+\end{array}
+\]
+Suppose flows that match the first flowgroup -- all flows from $X$ to
+$Y$ -- are waypointed through some switch, and that flows that match
+the second flowgroup -- all HTTP requests -- are given some bandwidth
+reservation.  These two flowgroups overlap, thus a flow may be (1)
+waypointed with a reservation, (2) only waypointed, (3) only given a
+reservation, or (4) not be affected by the policy.
+
+An OpenFlow flow table that realizes the above two-atom policy tree must have
+entries for all four cases.  The original algorithm~\cite{Ferguson:2012b}
+generates all possible combinations given trees of size $n$ --- \ie flow tables
+of size $O(2^n)$.
+
+We make two changes to prune the generated flow table: (1) we remove
+all rules that generate empty patterns and (2) we remove all rules
+whose patterns are fully shadowed by higher-priority rules. The
+earlier algorithm is recursive, and we prune after each recursive
+call.  It is obvious that this simple pruning does not affect the
+semantics of flow tables. However, a surprising result is that it
+dramatically improves the complexity of the algorithm.
+
+The intuition behind our proof is that for sufficiently large policy trees,
+the interchapters are guaranteed to produce
+duplicate and empty patterns that get pruned. To see this,
+note OpenFlow patterns have a bit-vector that determines which fields
+are wildcards.  Suppose two patterns have identical wildcard bits and
+we calculate their interchapter:
+
+First, if the two patterns are identical, then so is their
+  interchapter. Of these three identical patterns, two get pruned.
+Second, if the two patterns are distinct, since their wildcards are
+  identical, they exactly match some field differently. Thus, their
+  interchapter is empty and pruned.
+
+If patterns have $h$ header fields, there are only $2^h$ unique
+wildcard bit-vectors. Therefore, if a policy tree has more than $2^h$
+policy atoms, it is assured that some interchapters create empty or duplicate
+patterns that are pruned.
+
+Our full complexity analysis, which we omit due to space constraints, shows that when the
+number of policy atoms, $n$, is larger than $2^h$, then the
+compilation algorithm runs in $O(n^2)$ time and produces a flow table
+of size $O(n^2)$. OpenFlow 1.0 patterns are $12$-tuple, and our current
+policies
+only use $5$ header fields. Therefore, on policies
+with more than $2^5$ policy atoms, the algorithm is quadratic.
+
+\tightparagraph{Updating Flow Tables}
+
+It is not enough for \sys to generate flow tables quickly. It must
+also propagate switch updates quickly, as the time required to update
+the network affects the effective duration of requests.
+The OpenFlow protocol only allows switches to be updated one rule at a
+time.  A naive strategy is to first delete all old rules, and then
+install new rules. In \sys, we implement a faster strategy: the
+controller state stores the rules deployed on each switch; to install
+new rules, it calculates a ``diff'' between the new and old
+rules. These diffs are typically small, since rule-table updates occur
+when a subset of policy atoms are realized or unrealized.
+
+

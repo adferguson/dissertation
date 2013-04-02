@@ -1,0 +1,157 @@
+
+\chapter{Introduction}
+
+%\remark{
+%Things to add: 1) concrete examples such as the GitHub, Amazon, etc. breakdowns
+%and other motivations we have in the presentations 2) concrete examples of
+%potential benefits (e.g., preview the good stuff from the eval)}
+%\remark{
+%Introduction does not yet reflect the fact that \sys is the product of extensive
+%design decisions made both by experiment/engineering, and by rigorous
+%design considering formal reasoning and proofs, one of which we've mechanized.
+%Reader should be setup to understand this is a serious design paper. Among expected
+%outcomes: reader understands motivation, goals of participatory networking, and
+%briefly how it is different from other previous efforts.}
+
+Today's applications, whether running in datacenters, enterprise, campus, or
+home networks have an increasingly difficult relationship with the
+network. Networks are the shared fabric interconnecting users, applications,
+and devices, and fluctuating, unpredictable network performance and reliability
+create challenges and uncertainty for network administers, application
+developers, and frustrated end-users alike. As a result, software developers,
+researchers, and administrators expend considerable effort to work \emph{around}
+the network rather than work \emph{with} the network: video conferencing
+applications constantly probe network bandwidth~\cite{SkypeTraffic}, overlay networks are used to
+re-route traffic~\cite{SkypeTraffic}, network paths are reactively reconfigured based on inferences~\cite{alfares10hedera},
+and humans are required to throttle heavy network loads in response to planned
+or unplanned shifts in traffic matrices.
+%
+Using humans for network control, however, is no panacea, having
+been responsible for significant recent outages at both
+Github~\cite{githubOutage} and
+Amazon~\cite{awsOutage}.
+
+At a minimum, packet networks forward data, collect traffic statistics, and
+divide traffic based on addresses or other header fields. Increasingly, modern
+networks also provide additional services, often implemented via middleboxes,
+such as firewalling, compression, encryption, threat-detection, acceleration, and caching.
+Yet, all of these features are, for the most part, invisible to the applications
+passing traffic through them, or only available via rudimentary interfaces
+such as DSCP header bits.
+
+With greater visibility into and control of the network's state,
+a conferencing application could request bandwidth for a video call,
+and learn via the network that while only a guaranteed audio call is available
+now, it could reserve a video call in one hour.
+An intrusion detection script on a user machine could request that the
+\emph{network} filter traffic from a specific source.
+An important RPC service could protect latency-sensitive flows from competing
+background traffic.
+%An RPC service could inform the network that its flows will be short, but with a
+%deadline, which could enable shortest-deadline-first scheduling at
+%the switches~\cite{wilson11d3}.
+Or, a MapReduce-style application could request
+bandwidth guarantees or maximally disjoint paths to improve performance of its shuffle phase.
+
+Such examples suggest that an API should exist between the network's
+control-plane and its users, applications, and end-hosts. These
+principals need both \emph{read} access to learn the network's
+present and potential future conditions, and \emph{write} access to
+make independent configuration changes for their own benefit, and
+provide helpful knowledge such as future traffic demands, directly
+to the network's control-plane.
+
+In this paper, we borrow the concept of \emph{participatory
+networks} from \cite{Ferguson:2012a}, in which the network provides
+a configuration API to its users, applications, and end-hosts, and
+present the design, implementation, and evaluation of the first
+practical participatory networking controller for an
+OpenFlow-enabled software-defined network.
+
+In the absence of security guarantees and limited authorities,
+participatory networks would be places of anarchy. To be usable,
+such networks must provide isolation for their independent
+principals, preventing malicious users from hogging bandwidth,
+dropping packets, or worse. While isolation could be provided
+through network virtualization, we believe that is not always the
+right abstraction as it hides the fundamentally shared aspect of
+networks.  
+
+%{\color{red} By exposing
+%conflicts between principals and unhidden information about the
+%network state, principals can use this greater awareness to make
+%better-informed decisions about how to use or reconfigure the
+%network.}
+
+\vskip 0.5em
+
+We call our prototype \sys, COntroller for Participatory nEtworking.
+%The \sys controller implements a capability system --
+It delegates read and
+write authority, with optional restrictions, from the network's
+administrators to the users, or applications and hosts acting on
+their behalf.  The controller is logically centralized, has a global
+view of the network, and implements the principals' high-level
+intents by changing the configuration of the actual network devices.
+In addition, we implement and evaluate the examples described
+above by augmenting four real applications (\xref{sec:Evaluation}).
+
+\sys's user-facing API serves as the next layer on the current SDN stack.
+The abstractions provided by software-defined networks allow us
+to reason formally about \sys's design, and ensure the network
+continues to provide baseline levels of fairness and security, even as principals
+dynamically invoke their capabilities.
+
+Our design addresses the two key challenges of participatory networks:
+how to safely decompose control and visibility of the network, and how to resolve conflicts
+between participants and across requests. 
+\sys's solutions to these challenges were developed both through formal reasoning,
+and by porting real-world applications to solve existing use cases.
+We start with an overview of our solution in \xref{sec:overview},
+followed by more in-depth discussions for each challenge in \xref{sec:delegation}
+and \xref{sec:conflicts} respectively.
+
+
+\vskip 0.5em
+
+Many approaches to achieve some of these goals have been previously
+proposed including active networking~\cite{ActiveNetworking}, IntServ networking~\cite{rfc1633}, and
+distributed reservation protocols such as RSVP~\cite{rfc2205} and NSIS~\cite{rfc5974}.
+We discuss their relation to participatory networking in \xref{sec:related-work}.
+\sys does not introduce any new
+functionalities into the network. Instead, it exposes existing functionalities and
+provides a single platform for reasoning about their use. We argue that
+this approach provides several advantages: a single target for application
+developers, a unified management framework for network administrators,
+and, most importantly, the ability to reason across all network resources.
+
+\sys is designed for networks within a single administrative domain
+including corporate WANs, datacenters, campus or enterprise
+networks, and home networks. In such networks, there is, logically,
+a single owner from which authority can be delegated.  \sys's design
+does not rely on changes to the end-hosts, such as the use of a
+particular hypervisor, making it suitable for networks with
+user-owned or managed devices.  
+
+\vskip 0.5em
+
+This paper makes the following contributions:
+
+\begin{enumerate}
+
+%\item {\color{red}We develop a uniform abstraction to enable this ``conversation,'' and design
+%a corresponding API.}
+
+\item We implement a fully-functioning SDN controller which allows a
+network's administrators to safely delegate their authority using our API.
+
+\item We analyze a previously proposed algorithm for consolidating
+hierarchical policies, and propose a new algorithm that reduces the complexity
+from exponential to polynomial.
+
+\item We demonstrate our system's usefulness and
+practicality on a real OpenFlow testbed using 
+microbenchmarks and four real applications enhanced with our API.
+
+
+\end{enumerate}

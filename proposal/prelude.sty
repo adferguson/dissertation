@@ -1,0 +1,78 @@
+%\usepackage{geometry}
+
+%%Fonts: enable times if you don't have MinionPro installed
+\usepackage{times}
+%\usepackage{MinionPro}
+%\usepackage{multirow}
+
+\usepackage{fancyvrb} % For verbatim footnotes
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[sort,compress,numbers]{natbib}
+\usepackage{setspace} % to double-space Brown guidelines
+\usepackage{hyperref}
+
+%\usepackage{boxedminipage}
+\usepackage{subfigure}
+\usepackage{xspace}
+%\usepackage{thumbpdf}
+%\usepackage{color}
+%\usepackage{url}         %
+\usepackage{comment} 
+
+%\usepackage{lscape}
+%\usepackage{wrapfig}
+%\usepackage{semantic}
+
+%\usepackage{booktabs}
+%\usepackage{alltt}
+
+
+
+\hypersetup{
+	colorlinks=true,
+	urlcolor=black,
+	linkcolor=black,
+	citecolor=black,
+	pdfstartview=FitH %,
+	%pdftitle={Participatory Networking},
+	pdfauthor={Andrew D. Ferguson}
+	}
+
+\newcommand{\tightparagraph}[1]{\vspace{5pt}\noindent\textbf{#1}\ }
+
+\newcommand{\sys}{PANE\xspace} 
+\newcommand{\treelang}{HFT\xspace}
+%\newcommand{\priv}[1]{\emph{#1}}
+\newcommand{\priv}[1]{\textbf{#1}}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+\newcommand{\cf}{{cf.}\xspace}
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\etal}{\emph{et al.}\xspace}
+\newcommand{\xref}[1]{\S\ref{#1}}
+
+\newtheorem{defn}{Definition} % counter, do not use
+\newtheorem{wftree}[defn]{Definition}
+\newtheorem{lem}{Lemma} % counter, do not use
+\newtheorem{unioncommute}[lem]{Lemma}
+\newtheorem{thm}{Theorem} % counter, do not use
+\newtheorem{compilercorrect}[thm]{Theorem}
+
+\def\qed{\hfill$\blacksquare$}
+
+\newcommand{\paneshare}[5]{\ensuremath{\langle\textbf{srcIP}\mathord{=}#1,\textbf{dstIP}\mathord{=}#2,\textbf{proto}\mathord{=}#3,\textbf{srcPort}\mathord{=}#4,\textbf{dstPort}\mathord{=}#5\rangle}}
+
+\newcommand{\paneprin}[3]{\ensuremath{(\textbf{#1},\textit{#2},\textbf{#3})}}
+\newcommand{\paneprinuser}[1]{\ensuremath{(\textbf{#1},\star,\star)}}
+\newcommand{\paneprinapp}[1]{\ensuremath{(\star,\star,\textbf{#1})}}
+\newcommand{\paneprinall}{\ensuremath{(\star,\star,\star)}}
+\newcommand{\panepriv}{\ensuremath{\textit{Priv}}}
+\newcommand{\panemsg}{\ensuremath{\textit{Msg}}}
+\newcommand{\panequery}{\ensuremath{\textit{Query}}}
+\newcommand{\panereq}{\ensuremath{\textit{Req}}}
+\newcommand{\panehint}{\ensuremath{\textit{Hint}}}
+\newcommand{\panepolatom}{\ensuremath{\textit{Atom}}}
+\newcommand{\panetspec}{\ensuremath{\textit{Tspec}}}
+
+
+\frenchspacing
