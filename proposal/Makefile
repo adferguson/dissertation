@@ -6,6 +6,7 @@ MAINFILE = proposal
 
 all: $(MAINFILE).pdf
 
+# add *.cls to the list if using a cls
 %.pdf: %.tex %.bib *.cls  $(TEXFILES) $(BIBFILES)
 	pdflatex $*.tex 
 	bibtex --min-crossrefs=20 $*
