@@ -1,0 +1,14 @@
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.lof
+*.lot
+*.out
+*.toc
+*.idx
+*.ilg
+*.ind
+.DS_Store
+proposal.pdf
