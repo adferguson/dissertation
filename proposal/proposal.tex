@@ -1,4 +1,4 @@
-\documentclass[10pt]{book}
+\documentclass[10pt,oneside,openany]{book}
 \usepackage{prelude}
 \usepackage[margin=1in]{geometry}
 
@@ -8,7 +8,7 @@
 \VerbatimFootnotes
 
 \author{Andrew Ferguson}
-\title{Participatory Networking \\ Thesis Proposal}
+\title{Participatory Networking: \\ A Platform for Delegated Network Management \\ \ \\ Thesis Proposal}
 \date{May 3, 2013}
 
 %%
@@ -25,7 +25,6 @@
 %\include{acks}
 %\afterpreface
 
-
 \frontmatter % PROPOSAL
 
 \maketitle % PROPOSAL
@@ -34,6 +33,17 @@
 \mainmatter % PROPOSAL
 
 \doublespacing
+
+\def\abstract#1{\gdef\d@abstract{#1}}
+\def\d@abstract{}
+\def\abstractpage{%
+  \thispagestyle{empty}
+  \noindent Abstract of ``Participatory Networking: A Platform for Delegated Network Management''
+  \\
+  \input{abstract.txt}
+  \vfill\newpage}
+  
+\abstractpage
 
 \include{intro}
 

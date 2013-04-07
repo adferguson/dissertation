@@ -1,17 +1,16 @@
 
 \chapter{Introduction}
 
-%\remark{
-%Things to add: 1) concrete examples such as the GitHub, Amazon, etc. breakdowns
-%and other motivations we have in the presentations 2) concrete examples of
-%potential benefits (e.g., preview the good stuff from the eval)}
-%\remark{
-%Introduction does not yet reflect the fact that \sys is the product of extensive
-%design decisions made both by experiment/engineering, and by rigorous
-%design considering formal reasoning and proofs, one of which we've mechanized.
-%Reader should be setup to understand this is a serious design paper. Among expected
-%outcomes: reader understands motivation, goals of participatory networking, and
-%briefly how it is different from other previous efforts.}
+{\bf Thesis Statement} Modern applications can benefit from read and
+write interaction with a network's control-plane, yet such interaction is
+currently unsupported due to security and fairness concerns. We design
+a practical and feasible platform that addresses these challenges,
+and demonstrate its benefits. In addition, we can support a network's
+administrator in the safe and effective use of such a platform.
+
+\vskip 1em
+
+\section{The Need for Delegated Network Management}
 
 Today's applications, whether running in datacenters, enterprise, campus, or
 home networks have an increasingly difficult relationship with the
@@ -61,8 +60,8 @@ make independent configuration changes for their own benefit, and
 provide helpful knowledge such as future traffic demands, directly
 to the network's control-plane.
 
-In this paper, we borrow the concept of \emph{participatory
-networks} from \cite{Ferguson:2012a}, in which the network provides
+In this thesis, we introduce the concept of \emph{participatory
+networking}, in which the network provides
 a configuration API to its users, applications, and end-hosts, and
 present the design, implementation, and evaluation of the first
 practical participatory networking controller for an
@@ -77,17 +76,19 @@ through network virtualization, we believe that is not always the
 right abstraction as it hides the fundamentally shared aspect of
 networks.  
 
-%{\color{red} By exposing
-%conflicts between principals and unhidden information about the
-%network state, principals can use this greater awareness to make
-%better-informed decisions about how to use or reconfigure the
-%network.}
+% new
+By contrast, participatory networks reveal the conflicts between
+their principals and directly expose the control-plane's view of
+the network. Principals can use this greater awareness to make
+better-informed decisions about how to use or reconfigure the
+network.
 
-\vskip 0.5em
+\section{A Prototype System}
 
-We call our prototype \sys, COntroller for Participatory nEtworking.
-%The \sys controller implements a capability system --
-It delegates read and
+We have developed a prototype OpenFlow-based controller
+for participatory networks called \sys.
+The \sys controller implements a capability system --
+it delegates read and
 write authority, with optional restrictions, from the network's
 administrators to the users, or applications and hosts acting on
 their behalf.  The controller is logically centralized, has a global
@@ -112,7 +113,7 @@ followed by more in-depth discussions for each challenge in \xref{sec:delegation
 and \xref{sec:conflicts} respectively.
 
 
-\vskip 0.5em
+\vskip 1em
 
 Many approaches to achieve some of these goals have been previously
 proposed including active networking~\cite{ActiveNetworking}, IntServ networking~\cite{rfc1633}, and
@@ -133,9 +134,11 @@ does not rely on changes to the end-hosts, such as the use of a
 particular hypervisor, making it suitable for networks with
 user-owned or managed devices.  
 
+\begin{comment}
+
 \vskip 0.5em
 
-This paper makes the following contributions:
+In summary, this thesis makes the following contributions:
 
 \begin{enumerate}
 
@@ -155,3 +158,5 @@ microbenchmarks and four real applications enhanced with our API.
 
 
 \end{enumerate}
+
+\end{comment}
