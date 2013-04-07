@@ -1,0 +1,52 @@
+% The dissertation must be accompanied by an abstract which will be published
+% in Dissertation Abstracts International. The abstract should, in a concise
+% manner, present the problem of the dissertation, discuss the materials and
+% procedure or methods used, and state the results or conclusions. Mathematical
+% formulas, diagrams, and other illustrative materials should be avoided. The
+% abstract should not be part of the dissertation itself nor should it be
+% included in the table of contents. The abstract should be presented in two
+% unnumbered loose copies. It should be headed as follows:
+% 
+% Abstract of (TITLE OF DISSERTATION), by (AUTHOR'S NAME), Ph.D., Brown
+% University, May (YEAR IN WHICH DEGREE IS TO BE AWARDED).
+% 
+% The abstract should be prepared carefully since it will be published without
+% editing or revision. The abstract should be double-spaced and may not exceed
+% 350 words (maximum 2,450 typewritten characters — including spaces and
+% punctuation — about 70 characters per line with a maximum of 35 lines). If
+% the 350-word limit is exceeded, University Microfilms will simply cut off the
+% abstract at this point.
+
+In today's networks, non-administrative users have little interaction with a 
+network's control-plane. Such users can send probe traffic to determine the 
+network's present state, and develop inferences about its conditions, yet they 
+are prevented from directly contacting the control-plane for answers because of 
+security or privacy concerns. In addition to reading the control-plane's state, 
+modern applications have increasing need to write configuration state as well. 
+These applications, running in home, campus, and datacenter networks, know what 
+they need from the network, yet cannot convey such intentions to the 
+control-plane.
+
+This thesis introduces participatory networking, a novel platform for 
+delegating read and write authority from a network's administrators to end 
+users, or applications and devices acting on their behalf. Users can then work 
+with the network, rather than around it, to achieve better performance, 
+security, or predictable behavior. Our platform's design addresses the two key 
+challenges: how to safely decompose control and visibility of the network, and 
+how to resolve conflicts between untrusted users and across requests, while 
+maintaining baseline levels of fairness and security.
+
+We present a prototype implementation of participatory networking, structured 
+as an API and controller for OpenFlow-based software-defined networks (SDNs). 
+We call our controller PANE, and demonstrate its usefulness by experiments with 
+four real applications (Ekiga, SSHGuard, ZooKeeper, and Hadoop), and its 
+practicality through microbenchmarks. Furthermore, we develop a mechanical 
+proof for a key portion of PANE, the first for an SDN controller.
+
+Any mechanism for sharing the control-plane's management requires a clear
+understanding of a proposed change's impact, whether it is the delegation of
+authority via PANE, or by loading new applications in an SDN controller.
+Furthermore, an administrator may be interested in how to enable an unrealizable
+policy by  upgrading the network infrastructure. We propose to use the
+structures provided by recent models for programming SDNs, including PANE, to
+answer these questions.
