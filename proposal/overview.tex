@@ -7,7 +7,7 @@ one can request. We discuss the challenges involved in exposing
 network control to multiple principals, and the solutions we
 propose. We then discuss additional considerations that influenced
 \sys's design, which we detail in the following chapters
-(\S\ref{sec:messages}-\ref{sec:FullSystem}).
+(\ref{sec:messages}-\ref{sec:FullSystem}).
 
 \vskip 0.5em
 
@@ -64,8 +64,7 @@ allowing oversubscription.
 \label{f:system}
 \end{figure}
 
-\sys uses \emph{shares} to limit the authority of principals, a
-concept we borrow and extend from~\cite{Ferguson:2012a}.  A share
+\sys uses \emph{shares} to limit the authority of principals.  A share
 states \emph{who} (which principals) can say \emph{what} (which
 messages) about \emph{which} flows in the network.  This statement is
 represented, respectively, by a share's three components: its
@@ -103,8 +102,7 @@ overlapping flowgroups.  A key novelty of \sys is a principled and
 intuitive \emph{conflict-resolution} algorithm for hierarchical
 policies.
 
-We use Hierarchical Flow Tables (HFTs), introduced by Ferguson,
-\etal~\cite{Ferguson:2012b}, to materialize \sys's policy tree.  HFTs
+We develop Hierarchical Flow Tables (HFTs) to materialize \sys's policy tree.  HFTs
 provide a model for resolving conflicts in a hierarchy of policies,
 and a formally-verified compiler from such hierarchies to flow tables
 suitable for OpenFlow switches.  In particular, HFTs use

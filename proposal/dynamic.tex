@@ -279,7 +279,7 @@ Policy Tree nodes.  The $\mathit{lin}_D$ function translates policy
 atoms to singleton network flow tables, and combines them with
 $\mathit{union(+,N_1,N_2)}$.  $\mathit{Union}$ builds a network flow table that
 matches packets in either $N_1$ or $N_2$. In particular, when a packet
-matches both $N_1$ and $N_2$, $\mathit{union}$ computes the interchapter
+matches both $N_1$ and $N_2$, $\mathit{union}$ computes the intersection
 using the $+$ conflict-resolution operator to combine
 actions; in Figure~\ref{f:intermediate} we write the definition of
 $\mathit{union}$ as the table produced by $\mathit{inter(+,N_1,N_2)}$ prepended

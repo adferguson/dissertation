@@ -7,7 +7,7 @@ For example, one principal may issue a request to deny traffic to
 TCP port 80, while another may request  such traffic be allowed.
 This chapter discusses how \sys handles conflicts between overlapping requests.
 
-Two requests overlap when the interchapter of their
+Two requests overlap when the intersection of their
 respective flowgroups is not empty, \ie, there are some flows that
 match both.  As described in \xref{sec:overview}, principals
 make requests in the context of a share, and accepted requests
@@ -16,6 +16,305 @@ inherit from the share tree a natural hierarchical relationship,
 which we call the \emph{policy tree}. The network's effective policy is a function
 of the set of all policy atoms, their position in the tree, and the
 semantics of conflict resolution between overlapping policy atoms.
+
+\section{Semantics of \treelang}
+\label{sec:Implementation}
+
+\treelang allows several principals to author a tree of policies, and
+specify custom conflict-resolution operators at each node in the
+tree. In this section, we define the semantics of a policy tree as the
+final action it produces on an individual packet, after it has
+consolidated actions from all policies in the tree.\footnote{This
+  semantic model, where the central controller conceptually sees all
+  packets, is inspired by Frenetic~\cite{Foster:2010}.}
+In \xref{s:lin}, we compile these policy trees to run efficiently on hardware.
+%Because our switches cannot directly implement these trees, thus in section~\ref{s:lin},
+%we linearize these trees to \emph{network flow tables}, which
+%are easy to use in our runtime to configure switches.
+%{\color{red} We conclude with a theorem that this translation is correct.} % where did we put it?
+
+\begin{figure}
+
+\begin{displaymath}
+\begin{array}{lrcl}
+& H & = & \textrm{header names and ingress ports} \\
+\textrm{patterns} & V & = & \textit{const} \mid \textit{prefix} \mid \star \\
+\textrm{matches} & M & = & 
+  \emptyset \mid \langle \overrightarrow{H,V} \rangle \\
+\textrm{actions} & A & = & \textbf{Allow} \mid \textbf{Deny} 
+  \mid \textbf{GMB}(n) \mid \textbf{0} \\
+\textrm{conflict-resolution} & (+)  & = & A \rightarrow A \rightarrow A \\
+\textrm{operators} \\
+\textrm{policy atoms} & P & = & M \times A \\
+\textrm{policy tree nodes} & D & = & (+_D) \times 2^P \\
+\textrm{policy trees} & T & = & (+_P) \times (+_S) \times D \times 2^{T} \\
+\textrm{packets} & K & = & \langle \overrightarrow{H,\mathit{const}} \rangle
+\end{array}
+\end{displaymath}
+
+\fbox{$\mathit{cmb} : D \times K \rightarrow A$}
+\begin{displaymath}
+\begin{array}{l}
+\mathit{cmb}((+,\{ \cdots (M_i,A_i) \cdots \}), K) = 
+  A'_1 + \cdots + A'_k + \textbf{0} \\
+\begin{array}{lrcl}
+\textrm{where} & \{ A'_1, \cdots, A'_k \} & = & \{ A_i | M_i \cap K \ne \emptyset \}
+\end{array}
+\end{array}
+\end{displaymath}
+
+\fbox{$\mathit{eval} : T \times K \rightarrow A$}
+\begin{displaymath}
+\begin{array}{l}
+\textit{eval}((+_P,+_S,D,\{ T_1,\cdots, T_n \}), K) = \textit{cmb}(D, K) +_P A_1 \\
+\begin{array}{lrcl}
+\textrm{where}
+& A_1 & = & eval(T_1,K) +_S A_2 \\
+& A_2 & = & eval(T_2,K) +_S A_3 \\
+& \cdots \\
+& A_n & = & eval(T_n,K) +_S \textbf{0}
+\end{array}
+\end{array}
+\end{displaymath}
+
+\caption[Caption for Semantics]{Semantics of \treelang \footnotemark }
+\label{f:sharesem}
+\end{figure}
+
+
+Figure~\ref{f:sharesem} defines packets ($K$), policy trees ($T$),
+actions $(A)$, and a function $\mathit{eval}$ that matches packets
+against policy trees and returns an action.  
+For our purposes, packets are 
+a vector of header names and values; we do not match on packets'
+contents. For concreteness, we depict the actions we have implemented in 
+our prototype (\xref{s:lin}): admission control, guaranteed
+minimum bandwidth (GMB), and $\textbf{0}$, a special ``don't care''
+action. In
+\xref{sec:future}, we outline how to support additional ones such as
+rate-limiting and waypointing.
+
+A policy tree is a tree of policy nodes ($D$), which contain sets of policy
+atoms ($P$). An atom is a match rule and action pair, $(M,A)$. When a
+packet matches a policy atom, $M \cap K \ne \emptyset$, the atom produces
+its action. The interesting cases occur when a packet matches several
+policy atoms with conflicting actions. In these cases, we resolve conflicts
+with the conflict-resolution operators ($+$) attached throughout the policy tree.
+\footnotetext{$2^{M \times A}$ is the set of all subsets of pairs drawn from $M$ and $A$.}
+
+Policy trees have different types of conflict-resolution operators at several
+points in the tree (\ie, $+_D$, $+_P$, $+_S$ in Figure~\ref{f:sharesem}). 
+These multiple types allow HFT to resolve different types of conflicts using
+independent logic. For example, conflicts between parent and child nodes
+may be resolved differently than conflicts between a single node's internal
+policy atoms.
+Therefore, the choice of conflict-resolution operators is a key policy decision.
+Our prototype network (\xref{sec:hftinpane}) provides two default operators;
+developing and evaluating additional operators is left as future work.
+
+The function $\mathit{cmb}$ matches a packet with an individual policy
+tree node. If a packet matches several policy atoms,
+$\mathit{cmb}$ uses the node's internal conflict-resolution operator, $+_D$,
+to combine their actions. The compiler
+requires $+_D$ to be associative, commutative, and have $\textbf{0}$
+as its identity.\footnote{That is, we require $a + \textbf{0} =
+  \textbf{0} + a = a$.}
+
+The function $\mathit{eval}$ matches a packet with a policy tree by
+applying $\mathit{cmb}$ to the policy tree node at the root, and
+recursively applying $\mathit{eval}$ to its children. A policy tree
+has conflict-resolution operators $+_P$ and $+_S$, which respectively allow
+it to resolve parent-child and inter-sibling conflicts differently. In
+particular, $+_P$ does not have to be commutative -- it is always used
+with the parent's action on the left and the child's action on the
+right. This lets us express intuitive conflict resolutions such as ``child overrides
+parent.''
+
+
+\begin{figure}
+\centering
+\includegraphics{figs/evaltree}
+\caption{Evaluation of a single packet}
+\label{f:evaltree}
+\end{figure}
+
+
+\vspace{0.5em}\noindent\textbf{Example:\space}
+Figure~\ref{f:evaltree} depicts a simple policy tree
+and illustrates how $\mathit{eval}$ produces an action, given the 
+tree and indicated packet.
+Each node contains its policy atoms, and atoms which match the packet are colored
+green. The $\mathit{eval}$ function recursively produces an action from
+each sub-tree; these actions are the labels on each node's outgoing edge.
+
+In this example, the policy atoms at each leaf match the packet and produce
+an action.
+Node $3$ receives conflicting actions
+from its children, which it resolves with its inter-sibling
+conflict-resolution operator:
+$\textbf{GMB}(10)
++_S \textbf{Allow} = \textbf{GMB}(10)$. Node $3$ has no policy atoms
+itself, so it produces the $\textbf{0}$ action. Since $\textbf{0}$ is
+the identity of all conflict-resolution operators,
+  $\textbf{0} +_P \textbf{GMB}(10) = \textbf{GMB}(10)$ is the
+resulting action from this sub-tree. 
+
+Finally, Node 1 computes the aggregate action of its children:
+$\textbf{GMB}(30) +_S \textbf{GMB}(10) = \textbf{GMB}(\max(30,10))$.
+Since Node 1's policy atoms do not match the packet,
+the final action is
+$\textbf{0} +_P \textbf{GMB}(30) = \textbf{GMB}(30)$.
+
+
+\section{Compiling Policies}\label{s:lin}
+
+The preceding section assumes that a central function,
+$\mathit{eval}$, observes and directs all packets in the network.
+Although $\mathit{eval}$ specifies the meaning of policy trees, this is not a
+practical implementation. We now describe how to compile \treelang's
+policy trees to run on commodity switches, which support simpler, linear
+flow tables, to produce a practical implementation.
+
+Our compiler works in two stages. First, we translate policy trees to
+\emph{network flow tables}, which have a basic,
+linear matching semantics (\xref{sec:nft}). Second, we use
+network flow tables to configure a distributed network of switches,
+translating high-level actions such as $\textbf{GMB}(n)$ to low-level
+operations on switches (\xref{sec:configuring}).
+
+\begin{figure}[t]
+
+\begin{displaymath}
+\begin{array}{lrcl}
+\textrm{Network Flow Tables} & N & = & \langle \overrightarrow{M,A} \rangle
+\end{array}
+\end{displaymath}
+
+\fbox{$\mathit{scan} : N \times K \rightarrow A$}
+
+\medskip
+
+\inference
+{M_1\cap K = \emptyset \cdots M_{j-1} \cap K = \emptyset \qquad
+ M_j\cap K \ne \emptyset }
+{\mathit{scan}(\langle(M_1,A_1)\cdots(M_n,A_n)\rangle,K) = A_j}
+
+\medskip
+
+\inference
+{M_1\cap K = \emptyset \cdots M_{n} \cap K = \emptyset}
+{\mathit{scan}(\langle(M_1,A_1)\cdots(M_n,A_n)\rangle,K) = \textbf{0}}
+
+\medskip
+
+\fbox{$\mathit{lin}_D : D \rightarrow N$}
+\begin{displaymath}
+\begin{array}{l}
+\mathit{lin}_D\left(+_D,\{M_1,A_1, \cdots, M_j,A_j \}\right) 
+  = N_1 \\
+\begin{array}{lllll}
+\textrm{where} 
+& N_1 = \mathit{union}(+_D,\langle M_1,A_1\rangle, N_2) \\
+& \cdots \\
+& N_j = \mathit{union}(+_D, \langle M_j,A_j\rangle, \langle\rangle)
+\end{array}
+\end{array}
+\end{displaymath}
+
+\fbox{$\mathit{lin}_T : T \rightarrow N$}
+\begin{displaymath}
+\begin{array}{l}
+\mathit{lin}_T\left(+_P,+_S,D, \{T_1\cdots T_k\}\right)
+  = \mathit{union}(+_P,\mathit{lin}_D(D), N_1) \\
+\begin{array}{lllll}
+\textrm{where} 
+& N_1 = \mathit{union}(+_S, \mathit{lin}_T(T_1), N'_2) \\
+& \cdots \\
+& N_k = \mathit{union}(+_S,\mathit{lin}_T(T_k), \langle \rangle)
+\end{array}
+\end{array}
+\end{displaymath}
+
+\fbox{$\mathit{union},\mathit{inter} : (+) \times N \times N \rightarrow N$}
+\begin{displaymath}
+\begin{array}{l}
+\mathit{union}((+),N_1,N_2) = \mathit{inter}((+),N_1,N_2) N_1 N_2 \\
+\mathit{inter}((+),\langle\cdots(M_i,A_i)\cdots\rangle, \langle\cdots(M'_j,A'_j)\cdots\rangle) = \\
+\qquad \langle\cdots(M_i \cap M'_j,A_i+A'_j))\cdots\rangle
+\end{array}
+\end{displaymath}
+
+\caption{Network Flow Tables}
+\label{f:intermediate}
+
+\end{figure}
+
+\subsection{Network Flow Tables}
+\label{sec:nft}
+
+A network flow table ($N$) is a sequence of paired match rules
+and actions. The $\mathit{scan}$ function, defined in
+Figure~\ref{f:intermediate}, matches packets against network flow
+tables and returns the action associated with the first matching rule. If
+no rules match the packet, then $\mathit{scan}$ returns $\textbf{0}$.\footnote{The
+  $\mathit{scan}$ function is derived from 
+  NetCore~\cite{Monsanto:2012}.}
+
+The matching semantics of network flow tables correspond to the
+matching semantics of switch flow tables exposed by OpenFlow.  When a
+packet matches a switch flow table, only one rule's action applies. If a
+packet matches multiple rules, the switch selects the one with the
+highest priority.  A rule's index in a network flow table corresponds
+to a switch flow table priority, with index $0$ as the highest
+priority. Since all rules have distinct indices, a naive
+correspondence would give all rules distinct priorities. A more
+compact one, which we use, maps a sequence of
+non-overlapping network flow table rules to a single priority in a
+switch flow table.
+
+The $\mathit{lin}_T$ function is our compiler from policy trees to
+network flow tables. It uses $\mathit{lin}_D$ as a helper to compile
+policy tree nodes.  The $\mathit{lin}_D$ function translates policy
+atoms to singleton network flow tables, and combines them with
+$\mathit{union(+,N,N')}$.  $\mathit{Union}$ builds a network flow table that
+matches packets in either $N$ or $N'$. Moreover, when a packet
+matches both $N$ and $N'$, $\mathit{union}$ computes the intersection
+using the $+$ conflict-resolution operator to combine
+actions.
+
+Similarly, $\mathit{lin}_T$ recursively builds network flow tables for
+its subtrees, and calls $\mathit{lin}_D$ on its root node.  It applies
+$\mathit{union}$ to combine the results, using $+_S$ and $+_P$ where
+appropriate.
+
+
+The functions in Figure~\ref{f:intermediate}, $\mathit{lin}_T$,
+$\mathit{lin}_D$, $\mathit{union}$, and $\mathit{inter}$ require the
+conflict-resolution operators to satisfy the following properties.
+\begin{wftree}[Well-formed] 
+$T$ is well-formed if:
+\begin{itemize}
+
+\item The $+_D$ and $+_S$ operators are commutative,
+
+\item All conflict-resolution operators are associative, and
+
+\item $\textbf{0}$ is the identity of all conflict-resolution operators.
+\end{itemize}
+\end{wftree}
+Proving the compiler correct requires the following key lemma, which
+states that all conflict-resolution operators distribute over $\mathit{scan}$.
+\begin{unioncommute}
+For all $+$, $N_1$, and $N_2$, where $\textbf{0}$ is the identity of $+$,
+$\mathit{scan}(\mathit{union}(+,N_1,N_2)) = \mathit{scan}(N_1) +
+\mathit{scan}(N_2)$.
+\end{unioncommute}
+With this, we prove the compiler correct.
+\begin{compilercorrect}[Soundness]
+For all well-formed policy trees, $T$ and packets, $P$, $\mathit{eval}(T, P) =
+\mathit{scan}(\mathit{lin}_T(T), P)$.
+\end{compilercorrect}
+We mechanize all our definitions and proofs using the Coq proof assistant~\cite{coq}. \qed
 
 \begin{figure}
 \centering

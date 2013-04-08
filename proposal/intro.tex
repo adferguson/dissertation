@@ -83,6 +83,34 @@ the network. Principals can use this greater awareness to make
 better-informed decisions about how to use or reconfigure the
 network.
 
+% new
+
+\section{Software-Defined Networking}
+
+The recent development of Software-Defined Networks (SDNs)
+%which provide a logically centralized abstraction of network
+%control,
+%built on programmable devices,
+offers a platform to realize the vision of participatory networks~\cite{Greenberg:2005,McKeown:2008}.
+SDNs separate
+the logic that controls the network from its physical
+devices, allowing configuration \emph{programs} to operate on a
+high-level, global, and consistent view of the network. 
+%  allowing network-wide policies to be determined
+% centrally~\cite{Casado:2009, Gude:2008}, and expressed at a higher
+% level of abstraction than configuration of individual network
+% elements~\cite{Foster:2010,Hinrichs:2009, Kim:2010}
+This change has brought significant advances to datacenter and
+enterprise networks, such as high-level
+specification of access control~\cite{Nayak:2009} and
+QoS~\cite{Kim:2010}, safe experimentation~\cite{Sherwood:2010},
+in-network load-balancing~\cite{wang11wild}, and seamless VM 
+migration~\cite{Erickson:2008}.
+
+{\color{red} EXPLAIN THAT SDNS HAVE A CONTROLLER, LOGIC TAKEN OUT FROM SWITCH }
+
+{\color{red} SAY SOMETHING ABOUT OPENFLOW }
+
 \section{A Prototype System}
 
 We have developed a prototype OpenFlow-based controller
@@ -160,3 +188,9 @@ microbenchmarks and four real applications enhanced with our API.
 \end{enumerate}
 
 \end{comment}
+
+\section{Proposed Work}
+
+{\color{red}
+Briefly discuss the proposed work beyond this...
+}

@@ -9,7 +9,7 @@ $O(2^n)$, where $n$ is the size of the policy tree. The earlier
 algorithm is therefore useless on all but trivial policies.  However,
 we make two changes that greatly reduce the complexity:
 the modified algorithm yields flow tables
-of size $O(n^2)$ in $O(n^2)$ time. This chapter is an overview of our
+of size $O(n^2)$ in $O(n^2)$ time. This section is an overview of our
 results. 
 
 OpenFlow flow tables are simple linear
@@ -48,24 +48,24 @@ semantics of flow tables. However, a surprising result is that it
 dramatically improves the complexity of the algorithm.
 
 The intuition behind our proof is that for sufficiently large policy trees,
-the interchapters are guaranteed to produce
+the intersections are guaranteed to produce
 duplicate and empty patterns that get pruned. To see this,
 note OpenFlow patterns have a bit-vector that determines which fields
 are wildcards.  Suppose two patterns have identical wildcard bits and
-we calculate their interchapter:
+we calculate their intersection:
 
 First, if the two patterns are identical, then so is their
-  interchapter. Of these three identical patterns, two get pruned.
+  intersection. Of these three identical patterns, two get pruned.
 Second, if the two patterns are distinct, since their wildcards are
   identical, they exactly match some field differently. Thus, their
-  interchapter is empty and pruned.
+  intersection is empty and pruned.
 
 If patterns have $h$ header fields, there are only $2^h$ unique
 wildcard bit-vectors. Therefore, if a policy tree has more than $2^h$
-policy atoms, it is assured that some interchapters create empty or duplicate
+policy atoms, it is assured that some intersections create empty or duplicate
 patterns that are pruned.
 
-Our full complexity analysis, which we omit due to space constraints, shows that when the
+Our full complexity analysis shows that when the
 number of policy atoms, $n$, is larger than $2^h$, then the
 compilation algorithm runs in $O(n^2)$ time and produces a flow table
 of size $O(n^2)$. OpenFlow 1.0 patterns are $12$-tuple, and our current
