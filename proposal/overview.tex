@@ -1,3 +1,4 @@
+% !TEX root = proposal.tex
 \chapter{Overview}
 \label{sec:overview}
 
@@ -9,7 +10,7 @@ propose. We then discuss additional considerations that influenced
 \sys's design, which we detail in the following chapters
 (\ref{sec:messages}-\ref{sec:FullSystem}).
 
-\vskip 0.5em
+\vskip 1em
 
 \sys allows principals to gain controlled visibility into the network
 and to safely influence network operations.  \emph{Principals} in \sys
@@ -41,29 +42,30 @@ principals to affect the network, without ceding administrative
 privileges.
 
 %% Keep for posterity:
-%As simple examples, a firewall program in a user's machine may issue a 
-%request for denying all traffic from external IP addresses to
-%itself, to be implemented at the edges of the network; a distributed
-%RPC library may issue a hint for the network informing that all
-%flows between two ports will be small flows; or a backup application
-%may query the network about the current buffer utilizations along a 
-%path. 
+As simple examples, a firewall program in a user's machine may issue a 
+request for denying all traffic from external IP addresses to
+itself, to be implemented at the edges of the network; a distributed
+RPC library may issue a hint for the network informing that all
+flows between two ports will be small flows; or a backup application
+may query the network about the current buffer utilizations along a 
+path. 
 
-\sys addresses two key challenges. First, it provides a flexible
+\sys's design addresses two key challenges. First, it provides a flexible
 mechanism that gives multiple principals control
 over a fine-grained portion of network resources. Second, it resolves
 the inevitable conflicts that arise between principals' requests, while
 allowing oversubscription.
 
-\vskip 0.5em
+\vskip 1em
 
 \begin{figure}[t]
 \centering
-\includegraphics{figs/components}
+\includegraphics[width=0.4\textwidth]{figs/components}
 \caption{The \sys system and request processing}
 \label{f:system}
 \end{figure}
 
+\tightparagraph{Limiting Authority}
 \sys uses \emph{shares} to limit the authority of principals.  A share
 states \emph{who} (which principals) can say \emph{what} (which
 messages) about \emph{which} flows in the network.  This statement is
@@ -79,8 +81,9 @@ sub-share's flowgroup must be a subset of its parent's flowgroup, and a
 sub-share's privileges cannot be more permissive than its parent
 share's privileges.
 
-\vskip 0.5em
+\vskip 1em
 
+\tightparagraph{Resolving Conflicts}
 The share tree constrains the policies that can be realized in the
 network, but does not itself cause any policy to be implemented in the
 network. Instead, accepted requests and realized hints determine
@@ -107,12 +110,13 @@ provide a model for resolving conflicts in a hierarchy of policies,
 and a formally-verified compiler from such hierarchies to flow tables
 suitable for OpenFlow switches.  In particular, HFTs use
 \emph{conflict resolution operators} within and between each node in
-the hierarchy to flexibly resolve conflicts.  We describe the design
-of \sys's operators and its use of the HFT compiler in
+the hierarchy to flexibly resolve conflicts. We describe the design
+of \sys's operators, and the semantics and implementation of HFTs in
 \xref{sec:conflicts}.
 
-\vskip 0.5em
+\vskip 1em
 
+\tightparagraph{Request Processing}
 Having summarized \sys's key ideas, we now describe at a high level the
 processing of a single request, as depicted in
 Figure~\ref{f:system}. When an authenticated principal sends the controller a
@@ -139,27 +143,22 @@ To support this, \sys maintains a time-indexed sequence of policy trees. The abo
 checks may thus be made against future, planned network state as appropriate.
 
 %[Maybe here comes a short version of the interaction example?]
-%\begin{figure}
-%\begin{boxedminipage}{\columnwidth}
-%\begin{small}
-%\begin{Verbatim}
-%1 root: NewShare aliceBW for (user=Alice)
-%  [reserve <= 10Mb] on rootShare.
-%2 root: Grant aliceBW to Alice.
-%3 Alice: reserve(user=Alice,dstPort=80) = 8Mb
-%  on aliceBW from +20min to +30min.
-%4 root: NewShare bobAC for (dstHost=10.0.0.2)
-%  [deny = True] on rootShare.
-%5 root: Grant bobAC to Bob.
-%6 Bob: deny(dstHost=10.0.0.2, srcHost=10.0.0.3)
-%  on bobAC from now to +5min.
-%7 Bob: deny(dstHost=10.0.0.4, srcHost=10.0.0.3)
-%  on bobAC.
-%\end{Verbatim}
-%\end{small}
-%\end{boxedminipage}
-%\caption{Sample interaction between two principals and \sys.}
-%\end{figure}
+\begin{figure}
+\begin{boxedminipage}{\columnwidth}
+\begin{small}
+\begin{Verbatim}
+1 root: NewShare aliceBW for (user=Alice) [reserve <= 10Mb] on rootShare.
+2 root: Grant aliceBW to Alice.
+3 Alice: reserve(user=Alice,dstPort=80) = 8Mb on aliceBW from +20min to +30min.
+4 root: NewShare bobAC for (dstHost=10.0.0.2) [deny = True] on rootShare.
+5 root: Grant bobAC to Bob.
+6 Bob: deny(dstHost=10.0.0.2, srcHost=10.0.0.3) on bobAC from now to +5min.
+7 Bob: deny(dstHost=10.0.0.4, srcHost=10.0.0.3) on bobAC.
+\end{Verbatim}
+\end{small}
+\end{boxedminipage}
+\caption{Sample interaction between two principals and \sys.}
+\end{figure}
 
 
 

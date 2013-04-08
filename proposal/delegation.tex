@@ -1,3 +1,5 @@
+% !TEX root = proposal.tex
+\begin{landscape}
 \begin{table*}
 \centering 
 \begin{small}
@@ -94,6 +96,7 @@ P:\{F\} \rightarrow \panereq~\panetspec &
 \caption{Main concepts in \sys}  \vspace{-1em}
 \label{tab:concepts}
 \end{table*}
+\end{landscape}
 
 \chapter{Interacting with \sys}
 \label{sec:messages}
@@ -152,8 +155,8 @@ Shares lacking the ability to allow or deny traffic have $n = 0$.
 When creating a sub-share, a principal cannot exceed these constraints. For example,
 if a share carries the privilege to \priv{Deny} traffic for up to
 300 seconds, a sub-share cannot be created with the privilege to \priv{Deny}
-traffic for up to 301 seconds. %; similarly, a sub-share could not be created
-%with the privilege to \priv{Allow} traffic.
+traffic for up to 301 seconds; similarly, a sub-share could not be created
+with the privilege to \priv{Allow} traffic.
 
 The handling of a given packet is ultimately decided by the
 composition of every matching access control request. This composition
@@ -185,7 +188,7 @@ complete discussion of the strict and partial fulfillment modes until
 
 \begin{figure}[t]
 \centering
-\includegraphics{figs/sched}
+\includegraphics[width=0.6\textwidth]{figs/sched}
 \caption{Example user request for reserved bandwidth;
 \sys determines that it cannot be fulfilled until time $t$.}
 \label{fig:sched}
@@ -299,10 +302,10 @@ the network with information which may improve the application's or
 network's performance, without creating an additional
 requirement. Providing hints across abstraction boundaries is a
 natural feature in other systems.
-%For example, if a three-tier application makes
-%a request to its backing-store, and hints to the caching layer that it
-%won't make the same request again in the near future, the cache may
-%choose to skip storing the result.
+For example, if a three-tier web application makes
+a request to the database layer, and hints to the caching layer that it
+won't make the same request again in the near future, the cache may
+choose to skip storing the result.
 
 Three hints which are useful for networked applications include: the
 size (in bytes) of a flow, a desired flow-completion deadline, and the
@@ -352,8 +355,8 @@ multiple links.
 
 \begin{figure}[t]
 \centering
-\subfigure[]{\includegraphics{figs/share}}\hfill
-\subfigure[]{\includegraphics{figs/sharehierarchy}}
+\subfigure[]{\includegraphics[width=0.35\textwidth]{figs/share}}\hfill
+\subfigure[]{\includegraphics[width=0.35\textwidth]{figs/sharehierarchy}}
 \caption{(a) A \sys share. (b) A share
 hierarchy. The rectangle above each share represents a flowgroup
 according to one dimension (\eg, source IP). Sub-shares are defined
@@ -362,7 +365,7 @@ privileges than their parent.}
 \label{fig:shares}
 \end{figure}
 
-\vskip 0.5em
+%\vskip 1em
 
 This chapter presents the semantics of shares and how principals'
 messages are authorized in more detail. The \sys
@@ -377,7 +380,7 @@ atoms in the policy tree are properly authorized by the share tree at
 all times.
 
 %\section{Share Tree\label{sec:sharetree}}
-\vskip 0.5em
+\vskip 1em
 
 A share-tree is an $n$-ary tree of \emph{shares}, where a share gives
 a set of \emph{principals} some \emph{privileges} to affect a set

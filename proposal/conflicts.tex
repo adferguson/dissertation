@@ -1,3 +1,4 @@
+% !TEX root = proposal.tex
 \chapter{Conflict Resolution}
 \label{sec:conflicts}
 
@@ -17,10 +18,16 @@ which we call the \emph{policy tree}. The network's effective policy is a functi
 of the set of all policy atoms, their position in the tree, and the
 semantics of conflict resolution between overlapping policy atoms.
 
+{\color{red}
+We now describe how \sys uses the operators to resolve conflicts (\xref{sec:conflict-resolution-operators}),
+the compiler to strictly or partially fulfill requests (\xref{sec:strict-partial}),
+and the complexity of this approach (\xref{sec:compiler-complexity}).
+}
+
 \section{Semantics of \treelang}
 \label{sec:Implementation}
 
-\treelang allows several principals to author a tree of policies, and
+A Hierarchical Flow Table allows several principals to author a tree of policies, and
 specify custom conflict-resolution operators at each node in the
 tree. In this section, we define the semantics of a policy tree as the
 final action it produces on an individual packet, after it has
@@ -42,7 +49,7 @@ In \xref{s:lin}, we compile these policy trees to run efficiently on hardware.
 \textrm{matches} & M & = & 
   \emptyset \mid \langle \overrightarrow{H,V} \rangle \\
 \textrm{actions} & A & = & \textbf{Allow} \mid \textbf{Deny} 
-  \mid \textbf{GMB}(n) \mid \textbf{0} \\
+  \mid \textbf{Reserve}(n) \mid \textbf{RateLimit}(n) \mid \textbf{0} \\
 \textrm{conflict-resolution} & (+)  & = & A \rightarrow A \rightarrow A \\
 \textrm{operators} \\
 \textrm{policy atoms} & P & = & M \times A \\
@@ -88,11 +95,9 @@ against policy trees and returns an action.
 For our purposes, packets are 
 a vector of header names and values; we do not match on packets'
 contents. For concreteness, we depict the actions we have implemented in 
-our prototype (\xref{s:lin}): admission control, guaranteed
-minimum bandwidth (GMB), and $\textbf{0}$, a special ``don't care''
-action. In
-\xref{sec:future}, we outline how to support additional ones such as
-rate-limiting and waypointing.
+our prototype (\xref{sec:FullSystem}): admission control, reserving a guaranteed
+minimum bandwidth (GMB), rate-limiting bandwidth, and $\textbf{0}$, a special ``don't care''
+action.
 
 A policy tree is a tree of policy nodes ($D$), which contain sets of policy
 atoms ($P$). An atom is a match rule and action pair, $(M,A)$. When a
@@ -104,21 +109,22 @@ with the conflict-resolution operators ($+$) attached throughout the policy tree
 
 Policy trees have different types of conflict-resolution operators at several
 points in the tree (\ie, $+_D$, $+_P$, $+_S$ in Figure~\ref{f:sharesem}). 
-These multiple types allow HFT to resolve different types of conflicts using
+These multiple types allow an HFT to resolve different types of conflicts using
 independent logic. For example, conflicts between parent and child nodes
 may be resolved differently than conflicts between a single node's internal
 policy atoms.
 Therefore, the choice of conflict-resolution operators is a key policy decision.
-Our prototype network (\xref{sec:hftinpane}) provides two default operators;
-developing and evaluating additional operators is left as future work.
+Our prototype network (\xref{sec:FullSystem}) provides two default operators;
+developing and evaluating additional operators, such as operators to
+support priorities across requests, is left as future work.
 
 The function $\mathit{cmb}$ matches a packet with an individual policy
 tree node. If a packet matches several policy atoms,
 $\mathit{cmb}$ uses the node's internal conflict-resolution operator, $+_D$,
 to combine their actions. The compiler
-requires $+_D$ to be associative, commutative, and have $\textbf{0}$
-as its identity.\footnote{That is, we require $a + \textbf{0} =
-  \textbf{0} + a = a$.}
+requires $+_D$ to be associative and have $\textbf{0}$
+as its identity.\footnote{That is, we require $a + (b + \textbf{0}) =
+  (a + b) + \textbf{0} = a + b$.}
 
 The function $\mathit{eval}$ matches a packet with a policy tree by
 applying $\mathit{cmb}$ to the policy tree node at the root, and
@@ -133,7 +139,7 @@ parent.''
 
 \begin{figure}
 \centering
-\includegraphics{figs/evaltree}
+\includegraphics[width=0.8\textwidth]{figs/evaltree}
 \caption{Evaluation of a single packet}
 \label{f:evaltree}
 \end{figure}
@@ -152,18 +158,18 @@ an action.
 Node $3$ receives conflicting actions
 from its children, which it resolves with its inter-sibling
 conflict-resolution operator:
-$\textbf{GMB}(10)
-+_S \textbf{Allow} = \textbf{GMB}(10)$. Node $3$ has no policy atoms
+$\textbf{Reserve}(10)
++_S \textbf{Allow} = \textbf{Reserve}(10)$. Node $3$ has no policy atoms
 itself, so it produces the $\textbf{0}$ action. Since $\textbf{0}$ is
 the identity of all conflict-resolution operators,
-  $\textbf{0} +_P \textbf{GMB}(10) = \textbf{GMB}(10)$ is the
+  $\textbf{0} +_P \textbf{Reserve}(10) = \textbf{Reserve}(10)$ is the
 resulting action from this sub-tree. 
 
 Finally, Node 1 computes the aggregate action of its children:
-$\textbf{GMB}(30) +_S \textbf{GMB}(10) = \textbf{GMB}(\max(30,10))$.
+$\textbf{Reserve}(30) +_S \textbf{Reserve}(10) = \textbf{Reserve}(\max(30,10))$.
 Since Node 1's policy atoms do not match the packet,
 the final action is
-$\textbf{0} +_P \textbf{GMB}(30) = \textbf{GMB}(30)$.
+$\textbf{0} +_P \textbf{Reserve}(30) = \textbf{Reserve}(30)$.
 
 
 \section{Compiling Policies}\label{s:lin}
@@ -180,7 +186,7 @@ Our compiler works in two stages. First, we translate policy trees to
 linear matching semantics (\xref{sec:nft}). Second, we use
 network flow tables to configure a distributed network of switches,
 translating high-level actions such as $\textbf{GMB}(n)$ to low-level
-operations on switches (\xref{sec:configuring}).
+operations on switches (\xref{sec:NIB}).
 
 \begin{figure}[t]
 
@@ -204,6 +210,7 @@ operations on switches (\xref{sec:configuring}).
 \inference
 {M_1\cap K = \emptyset \cdots M_{n} \cap K = \emptyset}
 {\mathit{scan}(\langle(M_1,A_1)\cdots(M_n,A_n)\rangle,K) = \textbf{0}}
+
 
 \medskip
 
@@ -249,9 +256,6 @@ operations on switches (\xref{sec:configuring}).
 
 \end{figure}
 
-\subsection{Network Flow Tables}
-\label{sec:nft}
-
 A network flow table ($N$) is a sequence of paired match rules
 and actions. The $\mathit{scan}$ function, defined in
 Figure~\ref{f:intermediate}, matches packets against network flow
@@ -295,8 +299,6 @@ conflict-resolution operators to satisfy the following properties.
 $T$ is well-formed if:
 \begin{itemize}
 
-\item The $+_D$ and $+_S$ operators are commutative,
-
 \item All conflict-resolution operators are associative, and
 
 \item $\textbf{0}$ is the identity of all conflict-resolution operators.
@@ -316,110 +318,72 @@ For all well-formed policy trees, $T$ and packets, $P$, $\mathit{eval}(T, P) =
 \end{compilercorrect}
 We mechanize all our definitions and proofs using the Coq proof assistant~\cite{coq}. \qed
 
-\begin{figure}
-\centering
-\includegraphics{figs/evaltree}
-\caption{Evaluation of a single packet}
-\label{f:evaltree}
-\end{figure}
-
-The semantics of the policy tree is the final action it produces on an
-individual packet, after it has consolidated the actions of all
-policy atoms in the tree. Figure~\ref{f:evaltree} illustrates a packet's
-evaluation: matching policy atoms (shown in green) produce an action,
-such as \priv{Allow} (shown in blue), and conflicts are resolved up the
-hierarchy until a final action is emitted from the tree.
-
-The policy tree is a declarative representation of the effective policy implemented by
-\sys and installed in the physical network. In \sys, we represent
-policy trees using HFTs, or Hierarchical Flow Tables~\cite{Ferguson:2012b}.
-HFTs are a natural choice for \sys as they provide two key features:
-first, flexible conflict resolution through the use of \emph{conflict resolution operators};
-and second, a formally-verified compiler from HFTs to the flow match tables
-used in OpenFlow.
-We now describe how \sys uses the operators to resolve conflicts (\xref{sec:conflict-resolution-operators}),
-the compiler to strictly or partially fulfill requests (\xref{sec:strict-partial}),
-and the complexity of this approach (\xref{sec:compiler-complexity}).
-
-\section{Conflict-resolution Operators}
+\section{Conflict-resolution Operators in \sys}
 \label{sec:conflict-resolution-operators}
 
-%\begin{figure}[t]
-%\begin{small}
-%\fbox{$+_P : A \times A \rightarrow A$}
-%\begin{displaymath}
-%\begin{array}{lclcl}
-%\textbf{Deny} & +_P & \textbf{Allow} & = & \textbf{Allow} \\
-%\textbf{Allow} & +_P & \textbf{Allow} & = & \textbf{Allow} \\
-%A_P & +_P & \textbf{Deny} & = & \textbf{Deny} \\
-%\textbf{Deny} & +_P & \textbf{GMB}(n) & = & \textbf{GMB}(n) \\
-%\textbf{GMB}(m) & +_P & \textbf{GMB}(n) & = & \textbf{GMB}(\max(m,n)) \\
-%\textbf{GMB}(m) & +_P & \textbf{Allow} & = & \textbf{GMB}(m) \\
-%\textbf{Allow} & +_P & \textbf{GMB}(m) & = & \textbf{GMB}(n)
-%\end{array}
-%\end{displaymath}
-%
-%\fbox{$+_S : A \times A \rightarrow A$}
-%\begin{displaymath}
-%\begin{array}{lclcl}
-%\textbf{Deny} & +_S & A_2 & = & \textbf{Deny} \\
-%\textbf{GMB}(m) & +_S & \textbf{GMB}(n) & = & \textbf{GMB}(\max(m,n)) \\
-%\textbf{GMB}(m) & +_S & \textbf{Allow} & = & \textbf{GMB}(m) \\
-%\end{array}
-%\end{displaymath}
-%\end{small}
-%{\small The $+_S$ operator is commutative. We only show representative cases.}
-%
-%\caption{\sys's conflict-resolution operators}
-%\label{f:paneconflicts}
-%
-%\end{figure}
 
-
-
-HFTs resolve conflicts through the use of conflict resolution operators.
+As discussed previously, HFTs resolve conflicts through the use of conflict resolution operators.
 These operators take two conflicting requests as input, and return a single
 resolved request. For example, a packet which matches policy atoms from \priv{Reserve}(10)
 and \priv{Reserve}(30) may be resolved to the higher guaranteed bandwidth,
 \priv{Reserve}(30), as occurs at Node 1 in Figure~\ref{f:evaltree}.
 
-HFTs have three types of conflict-resolution operators at each node in the tree. 
-These multiple types allow HFTs to resolve different types of conflicts using
-independent logic: $+_D$ is used to resolve conflicts between requests
-within the same share, $+_P$ between conflicting requests in parent and
-child shares, and $+_S$ to resolve conflicts between sibling shares.
-Their placement directly in the nodes allows conflict resolution to make implicit use of
-the hierarchy.
-This design makes it simple to express intuitive conflict resolutions such as
-``child overrides parent.''
-%Therefore, the choice of conflict-resolution operators is a key policy decision.
+\begin{figure}[t]
+\begin{small}
+\fbox{$+_P : A \times A \rightarrow A$}
+\begin{displaymath}
+\begin{array}{lclcl}
+\textbf{Deny} & +_P & \textbf{Allow} & = & \textbf{Allow} \\
+\textbf{Allow} & +_P & \textbf{Allow} & = & \textbf{Allow} \\
+A_P & +_P & \textbf{Deny} & = & \textbf{Deny} \\
+\textbf{Deny} & +_P & \textbf{Reserve}(n) & = & \textbf{Reserve}(n) \\
+\textbf{Reserve}(m) & +_P & \textbf{Reserve}(n) & = & \textbf{Reserve}(\max(m,n)) \\
+\textbf{Reserve}(m) & +_P & \textbf{Allow} & = & \textbf{Reserve}(m) \\
+\textbf{Allow} & +_P & \textbf{Reserve}(m) & = & \textbf{Reserve}(n)
+\end{array}
+\end{displaymath}
 
-%The \treelang design allows for complex
-%conflict-resolution operators, and could support different operators at
-%each node in the tree.
-%However, 
-For \sys we chose simple conflict-resolution operators in the
+\fbox{$+_S : A \times A \rightarrow A$}
+\begin{displaymath}
+\begin{array}{lclcl}
+\textbf{Deny} & +_S & A_2 & = & \textbf{Deny} \\
+\textbf{Reserve}(m) & +_S & \textbf{Reserve}(n) & = & \textbf{Reserve}(\max(m,n)) \\
+\textbf{Reserve}(m) & +_S & \textbf{Allow} & = & \textbf{Reserve}(m) \\
+\end{array}
+\end{displaymath}
+\end{small}
+{\small The $+_S$ operator is commutative. We only show representative cases.}
+
+\caption{\sys's conflict-resolution operators}
+\label{f:sysconflicts}
+
+\end{figure}
+
+The \treelang design allows for complex
+conflict-resolution operators, and could support different operators at
+each node in the tree.
+However, for \sys we chose simple conflict-resolution operators in the
 interest of user and administrator understanding.
-%Figure~\ref{f:sysconflicts} specifies \sys's conflict-resolution
-%operators. {\color{red}(What about other resources??)}
+Figure~\ref{f:sysconflicts} specifies \sys's conflict-resolution
+operators. {\color{red}(What about other resources??)}
 \sys's parent-child operator ($+_P$) specifies a ``child
 overrides parent'' policy for admission control. \sys's $+_S$ and $+_D$
 operators are identical, and specify a ``\priv{Deny} overrides
 \priv{Allow} policy'' between siblings.
 
-%\remark{\color{red} Say that conflict resolution operators can break hints?}
+{\color{red} Say that conflict resolution operators can break hints?}
 
-%These operators' simple design is heavily influenced by \sys's
-%first come-first serve approach to granting requests -- for example,
-%the operators do not consider the principal who made the request;
-%each request is treated equally within its hierarchical context.
-%However, by taking advantage of this design flexibility, operators
-%which resolve conflicts by using priorities could be introduced.
-%Because such an approach would lead to previously accepted requests
-%being preempted, the \sys controller would need to maintain a
-%connection to each principal to provide preemption notifications.
-%Avoiding this complexity is an additional benefit of \sys's current,
-%simple approach.
+These operators' simple design is heavily influenced by \sys's
+first come-first serve approach to granting requests -- for example,
+the operators do not consider the principal who made the request;
+each request is treated equally within its hierarchical context.
+However, by taking advantage of this design flexibility, operators
+which resolve conflicts by using priorities could be introduced.
+Because such an approach would lead to previously accepted requests
+being preempted, the \sys controller would need to maintain a
+connection to each principal to provide preemption notifications.
+Avoiding this complexity is an additional benefit of \sys's current,
+simple approach.
 
 \section{Strict vs Partial Fulfillment}
 \label{sec:strict-partial}

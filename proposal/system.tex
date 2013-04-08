@@ -1,3 +1,4 @@
+% !TEX root = proposal.tex
 \chapter{The \sys Controller}
 \label{sec:FullSystem}
 
@@ -61,12 +62,11 @@ create queues, and out-of-band commands when necessary.  While
 OpenFlow allows us to set expiry timeouts on flow table entries, our
 controller must explicitly delete queues when reservations expire.
 
-
-%As Reitblatt, et al.~\cite{reitblatt12consistent} articulate, it is
-%a challenge to update switch configurations without introducing
-%inconsistent, intermediate stages. Our implementation does not
-%presently address this issue; we anticipate confronting this
-%problem in the future.
+As Reitblatt, et al.~\cite{reitblatt12consistent} articulate, it is
+a challenge to update switch configurations without introducing
+inconsistent, intermediate stages. Our implementation does not
+presently address this issue; we anticipate confronting this
+problem in the future.
 
 \section{Network Information Base}
 \label{sec:NIB}

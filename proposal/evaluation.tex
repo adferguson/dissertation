@@ -1,3 +1,4 @@
+% !TEX root = proposal.tex
 \chapter{Evaluation}
 \label{sec:Evaluation}
 
@@ -9,10 +10,10 @@
 
 We evaluate our \sys prototype with the Mininet platform for
 emulating SDNs~\cite{Mininet}, and with real networks. Our primary
-testbed includes two Pronto 3290 switches %running the Indigo
-%firmware,\footnote{\scriptsize{\url{http://indigo.openflowhub.org/}}}
+testbed includes two Pronto 3290 switches running the Indigo
+firmware,\footnote{\scriptsize{\url{http://indigo.openflowhub.org/}}}
 and several software OpenFlow switches (both Open vSwitch and the
-reference user-mode switch) %running
+reference user-mode switch) running
 on Linux Intel-compatible
 hardware, and on the TP-Link WR-1043ND wireless router.  Wired
 connections are 1 Gbps and wireless runs over 802.11n. Clients on
@@ -155,7 +156,7 @@ Like our modified applications, this benchmarking tool is also available on Gith
 \centering
 %\includegraphics[width=0.5\textwidth, trim=0.5in 0.5in 0.5in 4.4in, 
 %clip=true]{figs/create-latency-cdf-e}
-\includegraphics[width=\columnwidth]{figs/DELETE-zk-latencies-logscale}
+\includegraphics[width=0.8\textwidth]{figs/DELETE-zk-latencies-logscale}
 \caption{Latency of ZooKeeper DELETE requests.}
 \label{fig:ZooKeeperDELETE}
 \end{figure}
@@ -182,8 +183,8 @@ traffic.
 
 \begin{figure}[t]
 \centering
-\subfigure[]{\includegraphics[width=0.23\textwidth]{figs/hadoop_reserv.pdf}}
-\subfigure[]{\includegraphics[width=0.23\textwidth]{figs/hadoop_resident_rules.pdf}}
+\subfigure[]{\includegraphics[width=0.46\textwidth]{figs/hadoop_reserv.pdf}}
+\subfigure[]{\includegraphics[width=0.46\textwidth]{figs/hadoop_resident_rules.pdf}}
 \caption{Effect of Hadoop on \sys and network.}
 \label{fig:HadoopResvs}
 \end{figure}
@@ -264,9 +265,9 @@ number of simultaneous Hadoop rules was 28.
 
 \begin{figure*}[t]
 \centering
-\subfigure[]{\includegraphics[width=0.25\textwidth]{figs/flow_mod-cdf.pdf}}
-\subfigure[]{\includegraphics[width=0.25\textwidth]{figs/createQueue2-cdf.pdf}}
-\subfigure[]{\includegraphics[width=0.25\textwidth]{figs/createQueue1-cdf.pdf}}
+\subfigure[]{\includegraphics[width=0.32\textwidth]{figs/flow_mod-cdf.pdf}}
+\subfigure[]{\includegraphics[width=0.32\textwidth]{figs/createQueue2-cdf.pdf}}
+\subfigure[]{\includegraphics[width=0.32\textwidth]{figs/createQueue1-cdf.pdf}}
 \caption{Latency of switch operations in milliseconds.}
 \label{fig:SwitchOpLatency}
 \end{figure*}
