@@ -2,15 +2,12 @@
 \label{sec:compiler-complexity}
 
 To realize a policy tree in OpenFlow hardware, we have to compile it
-to flow tables for each switch. We use a variation of
-Hierarchical Flow Tables (HFT)~\cite{Ferguson:2012b}. A direct
+to flow tables for each switch. A direct
 implementation of the HFT algorithm produces flow tables of size
-$O(2^n)$, where $n$ is the size of the policy tree. The earlier
-algorithm is therefore useless on all but trivial policies.  However,
-we make two changes that greatly reduce the complexity:
-the modified algorithm yields flow tables
-of size $O(n^2)$ in $O(n^2)$ time. This section is an overview of our
-results. 
+$O(2^n)$, where $n$ is the size of the policy tree.
+With two changes, we can greatly reduce the complexity: the modified
+algorithm yields flow tables of size $O(n^2)$ in $O(n^2)$ time.
+This section is an overview of our results. 
 
 OpenFlow flow tables are simple linear
 sequences of patterns and actions. A flow can match several,
@@ -35,9 +32,8 @@ waypointed with a reservation, (2) only waypointed, (3) only given a
 reservation, or (4) not be affected by the policy.
 
 An OpenFlow flow table that realizes the above two-atom policy tree must have
-entries for all four cases.  The original algorithm~\cite{Ferguson:2012b}
-generates all possible combinations given trees of size $n$ --- \ie flow tables
-of size $O(2^n)$.
+entries for all four cases. In general, such an approach generates all possible
+combinations given trees of size $n$ --- \ie flow tables of size $O(2^n)$.
 
 We make two changes to prune the generated flow table: (1) we remove
 all rules that generate empty patterns and (2) we remove all rules
@@ -63,7 +59,8 @@ Second, if the two patterns are distinct, since their wildcards are
 If patterns have $h$ header fields, there are only $2^h$ unique
 wildcard bit-vectors. Therefore, if a policy tree has more than $2^h$
 policy atoms, it is assured that some intersections create empty or duplicate
-patterns that are pruned.
+patterns that are pruned, thus thinning the number of generated rules
+as new policy atoms are considered.
 
 Our full complexity analysis shows that when the
 number of policy atoms, $n$, is larger than $2^h$, then the
