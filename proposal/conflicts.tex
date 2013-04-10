@@ -6,7 +6,8 @@ Conflicts arise naturally in a participatory network, as \sys is
 designed to allow multiple, distributed principals to author the network configuration.
 For example, one principal may issue a request to deny traffic to
 TCP port 80, while another may request  such traffic be allowed.
-This chapter discusses how \sys handles conflicts between overlapping requests.
+This chapter discusses how \sys handles conflicts between overlapping requests
+through the introduction of Hierarchical Flow Tables (HFTs).
 
 Two requests overlap when the intersection of their
 respective flowgroups is not empty, \ie, there are some flows that
@@ -18,11 +19,11 @@ which we call the \emph{policy tree}. The network's effective policy is a functi
 of the set of all policy atoms, their position in the tree, and the
 semantics of conflict resolution between overlapping policy atoms.
 
-{\color{red}
-We now describe how \sys uses the operators to resolve conflicts (\xref{sec:conflict-resolution-operators}),
-the compiler to strictly or partially fulfill requests (\xref{sec:strict-partial}),
-and the complexity of this approach (\xref{sec:compiler-complexity}).
-}
+We now develop a detailed semantics for HFTs (\xref{sec:Implementation}),
+describe a compiler which translates HFTs for use in OpenFlow-based SDNs (\label{s:lin}), 
+detail \sys's choice of conflict-resolution operators (\xref{sec:conflict-resolution-operators}),
+the fulfillment of \emph{strict} and \emph{partial} requests, (\xref{sec:strict-partial}),
+and finally, analyze the complexity of the \treelang compiler (\xref{sec:compiler-complexity}).
 
 \section{Semantics of \treelang}
 \label{sec:Implementation}
@@ -183,7 +184,7 @@ flow tables, to produce a practical implementation.
 
 Our compiler works in two stages. First, we translate policy trees to
 \emph{network flow tables}, which have a basic,
-linear matching semantics (\xref{sec:nft}). Second, we use
+linear matching semantics. Second, we use
 network flow tables to configure a distributed network of switches,
 translating high-level actions such as $\textbf{GMB}(n)$ to low-level
 operations on switches (\xref{sec:NIB}).
@@ -377,8 +378,6 @@ overrides parent'' policy for admission control. \sys's $+_S$ and $+_D$
 operators are identical, and specify a ``\priv{Deny} overrides
 \priv{Allow} policy'' between siblings.
 
-{\color{red} Say that conflict resolution operators can break hints?}
-
 These operators' simple design is heavily influenced by \sys's
 first come-first serve approach to granting requests -- for example,
 the operators do not consider the principal who made the request;
@@ -390,6 +389,10 @@ being preempted, the \sys controller would need to maintain a
 connection to each principal to provide preemption notifications.
 Avoiding this complexity is an additional benefit of \sys's current,
 simple approach.
+
+Finally, it is important to note that \sys's conflict-resolution operators
+may drop previously realized hints to fulfill \emph{strict} requests,
+detailed next, as needed.
 
 \section{Strict vs Partial Fulfillment}
 \label{sec:strict-partial}

@@ -107,9 +107,21 @@ QoS~\cite{Kim:2010}, safe experimentation~\cite{Sherwood:2010},
 in-network load-balancing~\cite{wang11wild}, and seamless VM 
 migration~\cite{Erickson:2008}.
 
-{\color{red} EXPLAIN THAT SDNS HAVE A CONTROLLER, LOGIC TAKEN OUT FROM SWITCH }
+In a traditional network, the control-plane, which determines how
+to transmit packets is distributed across the network's switches. Each
+switch independently runs distributed algorithms (\eg, XXX) to determine the
+packet forwarding policy. By contrast, an SDN has a logically centralized
+controller, running on a commodity server platform, which calculates
+a forwarding policy (\eg, with Dijkstra's algorithm). The controller implements
+this policy by programming the switches' data-planes, which process
+traffic at line-rate.
 
-{\color{red} SAY SOMETHING ABOUT OPENFLOW }
+This programming is accomplished via a protocol such as
+OpenFlow~\cite{McKeown:2008}, which provides a common
+abstraction of a switch's data-plane. The principal component of this
+abstraction is a sequence of prioritized ``Match-Action'' pairs, where
+matches list a set of packet header fields, and actions specify handling
+of the matching packets: transmit via a port, place in a queue, drop, etc.
 
 \section{A Prototype System}
 

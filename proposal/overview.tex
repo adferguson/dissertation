@@ -60,7 +60,7 @@ allowing oversubscription.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.4\textwidth]{figs/components}
+\includegraphics[width=0.3\textwidth]{figs/components}
 \caption{The \sys system and request processing}
 \label{f:system}
 \end{figure}
@@ -81,7 +81,40 @@ sub-share's flowgroup must be a subset of its parent's flowgroup, and a
 sub-share's privileges cannot be more permissive than its parent
 share's privileges.
 
+Figure \ref{fig:interaction-example} traces an example interaction
+in which the root user creates a new share, \verb/aliceBW/ restricted to Alice's traffic (Line 1).
+This share carries the privilege to reserve up to 10 Mbps of guaranteed
+minimum bandwidth, and is a sub-share of the root share. In Line 2,
+the root user grants Alice access to this share. Alice then uses this
+share to reserve bandwidth for her HTTP (port 80) flows for 10 minutes,
+starting 20 minutes in the future (Line 3). In the next line, the root
+user creates a share for traffic destined to Bob's computer (\verb/10.0.0.2/)
+with the privilege to deny traffic, and subsequently grants Bob access
+to this share (Line 5). In Line 6, Bob successfully uses this share to block
+access from a host \verb/10.0.0.3/ for five minutes. However, his attempt to
+block traffic from that host to \verb/10.0.0.4/ is rejected as the specified
+flow group is not a subset of the share's flowgroup (\verb/dstHost=10.0.0.2/).
+
 \vskip 1em
+
+%[Maybe here comes a short version of the interaction example?]
+\begin{figure}[t]
+\begin{boxedminipage}{\columnwidth}
+\begin{small}
+\begin{Verbatim}
+1 root: NewShare aliceBW for (user=Alice) [reserve <= 10Mb] on rootShare.
+2 root: Grant aliceBW to Alice.
+3 Alice: reserve(user=Alice,dstPort=80) = 8Mb on aliceBW from +20min to +30min.
+4 root: NewShare bobAC for (dstHost=10.0.0.2) [deny = True] on rootShare.
+5 root: Grant bobAC to Bob.
+6 Bob: deny(dstHost=10.0.0.2, srcHost=10.0.0.3) on bobAC from now to +5min.
+7 Bob: deny(dstHost=10.0.0.4, srcHost=10.0.0.3) on bobAC.
+\end{Verbatim}
+\end{small}
+\end{boxedminipage}
+\caption{Sample interaction between three principals and \sys.}
+\label{fig:interaction-example}
+\end{figure}
 
 \tightparagraph{Resolving Conflicts}
 The share tree constrains the policies that can be realized in the
@@ -141,24 +174,6 @@ A final key feature, which we detail in subsequent chapters,
 is that \sys allows principals to request resources for future intervals.
 To support this, \sys maintains a time-indexed sequence of policy trees. The above
 checks may thus be made against future, planned network state as appropriate.
-
-%[Maybe here comes a short version of the interaction example?]
-\begin{figure}
-\begin{boxedminipage}{\columnwidth}
-\begin{small}
-\begin{Verbatim}
-1 root: NewShare aliceBW for (user=Alice) [reserve <= 10Mb] on rootShare.
-2 root: Grant aliceBW to Alice.
-3 Alice: reserve(user=Alice,dstPort=80) = 8Mb on aliceBW from +20min to +30min.
-4 root: NewShare bobAC for (dstHost=10.0.0.2) [deny = True] on rootShare.
-5 root: Grant bobAC to Bob.
-6 Bob: deny(dstHost=10.0.0.2, srcHost=10.0.0.3) on bobAC from now to +5min.
-7 Bob: deny(dstHost=10.0.0.4, srcHost=10.0.0.3) on bobAC.
-\end{Verbatim}
-\end{small}
-\end{boxedminipage}
-\caption{Sample interaction between two principals and \sys.}
-\end{figure}
 
 
 
