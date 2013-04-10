@@ -2,7 +2,7 @@ LATEX = pdflatex
 TEXFILES = $(wildcard *.tex)
 BIBFILES = $(wildcard *.bib)
 
-MAINFILE = proposal
+MAINFILE = ferguson-proposal
 
 all: $(MAINFILE).pdf
 
