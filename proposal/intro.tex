@@ -40,9 +40,9 @@ such as DSCP header bits.
 
 With greater visibility into and control of the network's state,
 a conferencing application could request bandwidth for a video call,
-and learn via the network that while only a guaranteed audio call is available
+and learn via the network that, while only a guaranteed audio call is available
 now, it could reserve a video call in one hour.
-An intrusion detection script on a user machine could request that the
+An intrusion detection script on a user machine could request the
 \emph{network} filter traffic from a specific source.
 An important RPC service could protect latency-sensitive flows from competing
 background traffic.
@@ -50,14 +50,14 @@ background traffic.
 %deadline, which could enable shortest-deadline-first scheduling at
 %the switches~\cite{wilson11d3}.
 Or, a MapReduce-style application could request
-bandwidth guarantees or maximally disjoint paths to improve performance of its shuffle phase.
+bandwidth guarantees, or maximally disjoint paths, to improve performance of its shuffle phase.
 
 Such examples suggest that an API should exist between the network's
 control-plane and its users, applications, and end-hosts. These
-principals need both \emph{read} access to learn the network's
-present and potential future conditions, and \emph{write} access to
+principals need both \emph{read} access, to learn the network's
+present and expected future conditions, and \emph{write} access, to
 make independent configuration changes for their own benefit, and
-provide helpful knowledge such as future traffic demands, directly
+provide helpful knowledge, such as future traffic demands, directly
 to the network's control-plane.
 
 In this thesis, we introduce the concept of \emph{participatory
@@ -73,12 +73,12 @@ such networks must provide isolation for their independent
 principals, preventing malicious users from hogging bandwidth,
 dropping packets, or worse. While isolation could be provided
 through network virtualization, we believe that is not always the
-right abstraction as it hides the fundamentally shared aspect of
+right abstraction, as it hides the fundamentally shared aspect of
 networks.  
 
 % new
 By contrast, participatory networks reveal the conflicts between
-their principals and directly expose the control-plane's view of
+their principals, and directly expose the control-plane's view of
 the network. Principals can use this greater awareness to make
 better-informed decisions about how to use or reconfigure the
 network.
@@ -108,7 +108,7 @@ in-network load-balancing~\cite{wang11wild}, and seamless VM
 migration~\cite{Erickson:2008}.
 
 In a traditional network, the control-plane, which determines how
-to transmit packets is distributed across the network's switches. Each
+to transmit packets, is distributed across the network's switches. Each
 switch independently runs distributed algorithms (\eg, Bellman-Ford) to determine the
 packet forwarding policy. By contrast, an SDN has a logically centralized
 controller, running on a commodity server platform, which calculates
@@ -131,7 +131,7 @@ The \sys controller implements a capability system --
 it delegates read and
 write authority, with optional restrictions, from the network's
 administrators to the users, or applications and hosts acting on
-their behalf.  The controller is logically centralized, has a global
+their behalf. The controller is logically centralized, has a global
 view of the network, and implements the principals' high-level
 intents by changing the configuration of the actual network devices.
 In addition, we implement and evaluate the examples described
@@ -207,8 +207,10 @@ Participatory networks enable users to directly specify their intentions to
 the network's control-plane. To date, we have shown this interaction
 can occur without compromising the network's security or fairness by
 safely decomposing control and visibility of the network, and resolving 
-conflicts in a principled and intuitive manner, and that such interaction
-can improve user experience (Chapters \ref{sec:overview}-\ref{sec:Evaluation}).
+conflicts in a principled and intuitive manner
+(Chapters \ref{sec:overview}-\ref{sec:FullSystem}).
+Furthermore, we have shown that such interaction
+can improve user experience (Chapter \ref{sec:Evaluation}).
 In our proposed work (Chapter \ref{sec:proposed}), we plan to reason further \emph{about} these intentions:
 is the network configured to support its users' intentions? if so, how well?
 which intentions can be realized? how will one user's intentions affect another's?
