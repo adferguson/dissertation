@@ -15,25 +15,25 @@ configuration without involving a fully-trusted administrator.
 While the \sys controller authenticates users and can log operations for
 audit pruposes, users may not always behave appropriately, either willfully 
 or accidentally. Because there are multiple independent parties directing the 
-configuration of the network, we would like to automatically prevent ``bad''
-configurations. ``Bad'' configurations can take many forms:
+configuration of the network, we would like to prevent ``bad''
+configurations automatically. ``Bad'' configurations can take many forms:
 
 {\singlespacing
 \begin{enumerate}
-\item configurations with routing loops 
-\item configurations with blackholes (\ie, routes which cause packets to be dropped)
-\item routes which violate isolation guarantees, which must be met for practical 
+\item Configurations with routing loops 
+\item Configurations with blackholes (\ie, routes which cause packets to be dropped)
+\item Routes which violate isolation guarantees, which must be met for practical 
 (eg, ``don't let customer traffic on the administrative network''), contractual 
 (eg, ``don't allow Pepsi to see Coke's traffic''), or legal reasons (eg, ``don't 
 allow medical traffic to reach the wider internet'')
-\item confusing configurations, in which rules are ``shadowed'' by other rules, thus 
+\item Confusing configurations, in which rules are ``shadowed'' by other rules, thus 
 obscuring the resulting actions, or which have superfluous rules, which will 
 never have an effect.
 \end{enumerate}
 }
 
 Before continuing, we wish to note that there are two distinct questions here. 
-The first is whether a proposed change causes the network configuration to 
+The first is whether making a proposed change causes the network configuration to 
 become ``bad,'' and the second is whether granting a proposed privilege
 (a capability) to make a certain set of changes \emph{can} lead to bad
 configurations in the future. Considering \sys as a capability-based system, 
@@ -74,10 +74,10 @@ department host?
 \end{enumerate}
 }
 
-these last questions are about reachability analysis on the capability graph.
+These last questions are about reachability analysis on the capability graph.
 
 Analyzing these questions in \sys can be complicated because some shares 
-may apply to a user's traffic, while other share's may apply to an application's 
+may apply to a user's traffic, while other shares may apply to an application's 
 traffic: How do we block Alice from exercising a privilege which she can get using 
 a share for application Foo? What is the appropriate place in the ShareTree to install such 
 a block? This block might be viewed as an \emph{invariant} on the ShareTree which we 
@@ -88,8 +88,8 @@ the tree where these two policy atoms met, we would be fine -- but what if the
 policy operator changes? We should be able to alert the administrator to the 
 effect of this change.
 
-A second ShareTree invariant we are interested in supporting is one which
-maintains a level of baseline fairness between users. More concretely, can
+A second ShareTree invariant we are interested in supporting is one to
+maintain a level of baseline fairness between users. More concretely, can
 we prevent a misconfiguration of the token buckets, such that one user could
 monopolize the reservations on a link? Or that some user may never be able
 to reserve bandwidth?
