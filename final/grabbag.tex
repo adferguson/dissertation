@@ -1,0 +1,228 @@
+\chapter{Grab Bag of New Material}
+
+\begin{itemize}
+\item Change ``speaker'' to ``principal''
+
+\item Using PANE for network \emph{services}, such as in-network firewalls, load-balancers, etc. in addition to basic network resources such as bandwidth, access control, latency, etc.
+
+\item Apache's \verb/.htaccess/ files as an example of hierarchical policies partially constructed by users, with static specification of what users can and cannot configure. File system permissions are another simple example.
+\end{itemize}
+
+\section{Evaluation}
+\begin{itemize}
+\item how many rules would we expect to see in a typical datacenter? how quickly would we add new high-level rules? how quickly would low-level rules be generated as a result?
+\item dig more deeply into concrete scenarios, exploring, for example, the rules which would be created
+\item Repeat ZooKeeper experiment, this time with RAM disks for logs and storage, so we can focus on the network
+\item Prove better performance than the traffic-based inference algorithms (e.g., Hedera) for Hadoop traffic or placing large flows ... it would be phenomenal if we could do this on the UCSD testbed, but we may have to settle for simulation
+\item Could potentially evaluate PANE's own performance for checking the share tree, making the reservation, compiling the rules, etc., although we aren't trying to build a high-performance system
+\item Using PANE to set-up Lucian's weights or Purdue's time-varying bandwidths
+(I think these both seek to provide minimum guarantees, then proportional afterwards based on payment)
+\item What can we say about PANE's completeness?
+\end{itemize}
+
+\section{Adding Priorities to the HFT}
+
+combiner functions in the HFT could allow you to express this kind of prioritization, although PANE's current set do not.
+
+basically, the scenario here is:
+\begin{itemize}
+\item we have 10mbps of bandwidth
+\item user A reserves 10mbps for 2 hours
+\item after 1 hour, user B comes along and wants to reserve 10mbps for 2 hours
+\end{itemize}
+
+today, PANE says ``no, wait your turn'' because of the ``a promise is a promise'' mantra. :-)  my feeling is that you should design your share tree so that you don't get into this situation if you don't want to (eg, only let user A issue a \emph{hint} for 10mbps of bandwidth, instead of a reservation)
+
+\section{Dynamic networks}
+
+I want to plug a switch into the network and have \sys determine how to expose 
+its features to the end users, as new potential privileges on the shares. For 
+example, if I have a network made up of Indigo switches (which have 
+configurable queues) and add an HP switch (which has configurable 
+rate-limiters), then \sys should automatically adapt to and expose the new 
+functionality in the network. Similarly, if I install some new cabling, then 
+perhaps multiple paths can be made available, whereas previously there were 
+only single paths.
+
+I feel like we've been running away from implementation details, but I think we 
+actually want to embrace them and make it possible to share and manage those 
+physical resources.
+
+\section{Other questions we've gotten}
+
+questions about: the fundamental concept from Keith W at MIT ... e.g., why should people do this instead of simply adding more capacity to their network? why is this easier than setting-up QOS for the genome sequencer example or the video simulcast?
+
+questions about being too broad, or too generic from the MSR people  ... I'm not sure; I really think that this is a feature of PANE. the increasing number of mechanisms being proposed really would benefit from a generalized approach to delegation and resource management. perhaps too many people have been burned in the past by the standardization process (or, more simply, they might all be too focused on \emph{datacenters}, where applications and mechanisms are developed hand-in-hand). perhaps it is important that we develop the mechanism to find out what features the network supports.
+
+\chapter{Participatory Rate Limiting}
+
+{\color{red} It is clear how to put this into the NIB, but we just haven't done it yet. Leads to some
+discussion in related work as well.}
+
+Participatory rate-limiting gives the receiver control over traffic coming to 
+it. For example, this traffic may be:
+\begin{enumerate}
+\item DDOS attacks
+\item Two tenants in a shared data-center (tenant A has contracted with tenant 
+B for some service, and tenant B wants to enforce the terms of the contract, 
+which may include a limit on how much traffic it will accept from tenant A at 
+any given time) -- We should probably reference Seawall (Alan Shieh, Srikanth, 
+etc.) and CloudPolice/FairCloud (Lucian Popa, Ion Stoica, etc.)
+\end{enumerate}
+
+{\bf Implementation -- }  In either case, whether the rate-limit is set by the 
+sender or the receiver, we want to place the rate-limit as close as possible to 
+the source of the traffic.  SDNs give us global knowledge, so we can actually 
+do this.
+
+Two examples:
+\begin{enumerate}
+\item if the src=*, then we have to put it at the last hop switch before the 
+destination
+\item if the src=12.0.0.0/8, then we can put it further into the network
+\end{enumerate}
+
+It could also make sense to copy the rate-limit further into the network, as a 
+pro-active measure. For example, if a rate-limit of 10 Mbps is to be placed at 
+the receiver's edge switch (for example, it is a rate-limit on all traffic), we 
+can optimize our ability to drop traffic by copying that same rate limit to all 
+switches upstream of the edge switch. 
+
+For now, we will restrict their placement to edge switches to simplify 
+implementation.
+
+Note, we can use any mechanism to do this. It could be OpenFlow
+with hardware switches, or it could be a mechanism in the VM, such as
+Open vSwitch or something like Seawall.
+
+\section{Trouble in Paradise}
+
+If I say `limit of 10Mbps for http traffic (dstPort=80)'? Does it currently mean that any individual flow will be limited to 10Mbps, or that the sum of all flows that match will be <= 10Mbps?
+
+The latter is the intent. The implementation does not support this
+particular command right now, but it should be realizable. ADF can
+confirm--we haven't played with rate-limiting, but it should be
+doable.
+
+\begin{verbatim}
+(DstIP=a)    Limit: 50Mbps
+(DstPort=80) Limit:100Mpbs
+ 
+A = DstIP =a & DstPort != 80
+B = DStIP =a & DstPort  = 80
+C = DstIP!=a & DstPort  = 80
+\end{verbatim}
+
+How can we flatten this? Whatever we use of bandwidth in B takes from both A and C's limit, but there can be no partitioning of the bandwidth a priori.
+
+I believe there are two issues here:
+\begin{enumerate}
+\item how do we do accounting across the flows, and what should the HFT combiner functions look like?
+\item how do we enforce this with a distributed set of switches?
+\end{enumerate}
+
+is there anything I'm still missing?
+
+\section{Related works}
+
+\begin{itemize}
+\item ``Cloud Control with Distributed Rate Limiting'' (SIGCOMM 2007)
+\item ``Gatekeeper: Distributed Rate Control for Virtualized Datacenters'' (HP Labs Tech Report)
+\end{itemize}
+
+\chapter{Comments from HotSDN Reviewers}
+
+These are good we should address them.
+
+\section{Reviewer 2}
+
+I would have liked to see more detailed comparison with FML, which is very closely related to this work.  From the language point of view, the main innovation of HFT over FML seems to be in introducing a tree structure with customizable conflict resolution operators. It would be nice to illustrate why these are important (vs. FML's facilities) with well-motivated examples that cannot be easily expressed in FML.
+
+A second difference with FML is the choice to compile OpenFlow rules rather than to evaluate the policy per flow request at the controller and install "microflow rules" in switches.  This design decision likely has consequences - for example the choice to compile means that network policy should probably change slowly whereas with FML the policy could depend on rapidly changing state at the controller - and it would be helpful to understand what the authors see as the motivations for this choice. In fact, it would be great to see an evaluation of how long it takes to compile rules while varying factors such as policy tree size and number of switches. 
+
+I would like to see more discussion of how PANE uses HFT's policy tree. In particular, given a user request, where in the tree are the request's constraints placed?  In what way does PANE make use of key innovation of HFT (namely, the use of trees) to implement something that would be difficult in FML?
+
+\section{Reviewer 3}
+
+How does PANE decide where to install the rules to block traffic and/or reserve BW,etc.?  How efficient is the rule placement? For BW allocation, do you use a greedy algorithm? It will be very interesting if you have an experiment in which you try to install rules based on high level policies on different networks with different complexities and topologies, and then compare the optimality of your rule placement against the most optimal placement.
+
+\chapter{Removed from Discussion}
+
+\sys's OpenFlow compiler is currently a victim of the well-known
+``rule explosion''ñ problem. This occurs when two or more rules
+intersect, and matching packets must follow a different action, such
+as their combination. Implementing such combinations in OpenFlow 1.0
+requires the rules' cross-products also be installed, which greatly
+increases the number of rules.
+
+While \sys's design is inspired by object-capability systems, \sys is
+not precisely such a system as it performs a basic authorization
+(access-control) check upon a principal's use of a share.  This was a
+pragmatic decision to ease support for granting capabilities to
+offline users, and to give users the ability to query \sys to
+determine their available capabilities.  As an alternative, we could
+have created a separate depository service to hold true
+object-capabilities in escrow for \sys's principals.
+
+{\color{red}What citations do we need here? Something about ``Lampson
+  capabilities'' ?}  \emph{Shares are like physical keys -- the policy
+  is embedded in the object itself (this is what makes them a
+  capability). When you have access to the share, you have its
+  privileges.}
+
+From the beginning, we have modeled \sys's dynamic semantics as a
+tree.  There is not, however, a fundamental reason why this tree
+couldn't have been a DAG.  \sys offers network administrators a way to
+decompose their authority into individual capabilities for
+non-administrative principals. We find trees to simply be a natural
+way to reason about and understand such hierarchical decomposition.
+
+Generalizing \sys's semantics to use a DAG would introduce a number of
+difficulties which our current design avoids. For example, a tree
+provides only a single path to the root, which eliminates any
+potential for ambiguity when accounting for resource consumption in
+the hierarchy. Furthermore, \sys's current design implies that each
+share completely restricts any requests in its sub-shares; they cannot
+be expanded by merging with other paths in a DAG. This helps
+administrators know how much authority has been granted to users,
+which may assist physical planning (\eg, for bandwidth-type
+restrictions).
+
+To achieve some of the benefits of a more general approach, we could
+implement ``aggregate'' requests which draw from multiple shares. Such
+future work would need to tackle problems with resource fragmentation,
+fairness, and work-conservation.  For example, \sys's current, simple
+approach prevents hoarding because users cannot use resources from
+multiple shares to gather more than what any single path through the
+tree has granted them.
+
+\chapter{Removed From Future Work}
+
+ and extending
+flow groups with more semantic concepts such as ``all of Bob's flows'' or
+``all Hadoop flows,'' which would require transforming such high-level
+concepts to the prosaic world of MAC addresses and port numbers.
+
+\begin{comment}
+
+What do we keep doing with \sys?
+
+\begin{itemize}
+\item supporting rules which require two operators to override them, or similar
+features that would have helped prevent the famous Amazon datacenter
+mis-configuration.
+\item better change-impact analysis
+\item supporting flexibility in rules, such as ``do this before 8pm tonight''
+\item in-network services (middleboxes?) ... are these more abstract than 
+waypoint and avoid?
+or do waypoint and avoid already cover them? we will want to integrate
+efforts to build middlebox APIs, such as from Aaron Gember in HotNets 2012
+\end{itemize}
+
+\end{comment}
+
+{\color{red} HotSDN reviewer 2 wanted to understand how \sys's use of
+  the tree was an improvement over FML (e.g., why we couldn't just
+  compile to FML, in theory). ARJUN: Does not apply to this paper,
+  since it is so much broader.}
+

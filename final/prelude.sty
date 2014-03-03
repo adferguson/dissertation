@@ -1,0 +1,208 @@
+%\usepackage{geometry}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+
+%%Fonts: enable times if you don't have MinionPro installed
+\usepackage{times}
+%\usepackage{MinionPro} .... % TODO(adf): would be nice if we got this working! breaks microtype package
+\usepackage{multirow}
+
+
+\usepackage{fancyvrb} % For verbatim footnotes
+\usepackage{graphicx}
+\usepackage[sort,compress,numbers]{natbib}
+\usepackage{setspace} % to double-space Brown guidelines
+\usepackage{hyperref}
+
+\usepackage{semantic}
+\usepackage{boxedminipage}
+\usepackage{subfigure}
+\usepackage{xspace}
+%\usepackage{thumbpdf}
+%\usepackage{color}
+%\usepackage{url}         %
+\usepackage{comment} 
+
+\usepackage{pdflscape}
+%\usepackage{wrapfig}
+
+%\usepackage{booktabs}
+\usepackage{alltt}
+
+
+\hypersetup{
+	colorlinks=true,
+	urlcolor=black,
+	linkcolor=black,
+	citecolor=black,
+	pdfstartview=FitH %,
+	%pdftitle={Policy Delegation and Migration for Software-Defined Networks},
+	pdfauthor={Andrew D. Ferguson}
+	}
+
+\newcommand{\tightparagraph}[1]{\vspace{5pt}\noindent\textbf{#1}\ }
+
+\newcommand{\sys}{PANE\xspace} 
+\newcommand{\treelang}{HFT\xspace}
+%\newcommand{\priv}[1]{\emph{#1}}
+\newcommand{\priv}[1]{\textbf{#1}}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+\newcommand{\cf}{{cf.}\xspace}
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\etal}{\emph{et al.}\xspace}
+\newcommand{\xref}[1]{Chap. \ref{#1}}
+
+\newtheorem{defn}{Definition} % counter, do not use
+\newtheorem{wftree}[defn]{Definition}
+\newtheorem{lem}{Lemma} % counter, do not use
+\newtheorem{unioncommute}[lem]{Lemma}
+\newtheorem{thm}{Theorem} % counter, do not use
+\newtheorem{compilercorrect}[thm]{Theorem}
+
+\def\qed{\hfill$\blacksquare$}
+
+\newcommand{\paneshare}[5]{\ensuremath{\langle\textbf{srcIP}\mathord{=}#1,\textbf{dstIP}\mathord{=}#2,\textbf{proto}\mathord{=}#3,\textbf{srcPort}\mathord{=}#4,\textbf{dstPort}\mathord{=}#5\rangle}}
+
+\newcommand{\paneprin}[3]{\ensuremath{(\textbf{#1},\textit{#2},\textbf{#3})}}
+\newcommand{\paneprinuser}[1]{\ensuremath{(\textbf{#1},\star,\star)}}
+\newcommand{\paneprinapp}[1]{\ensuremath{(\star,\star,\textbf{#1})}}
+\newcommand{\paneprinall}{\ensuremath{(\star,\star,\star)}}
+\newcommand{\panepriv}{\ensuremath{\textit{Priv}}}
+\newcommand{\panemsg}{\ensuremath{\textit{Msg}}}
+\newcommand{\panequery}{\ensuremath{\textit{Query}}}
+\newcommand{\panereq}{\ensuremath{\textit{Req}}}
+\newcommand{\panehint}{\ensuremath{\textit{Hint}}}
+\newcommand{\panepolatom}{\ensuremath{\textit{Atom}}}
+\newcommand{\panetspec}{\ensuremath{\textit{Tspec}}}
+
+
+\frenchspacing
+
+%%%%
+
+% from flowlog.tex
+
+\newcommand{\flowlog}{Flowlog}
+
+\usepackage{pifont}
+\newcommand{\xm}{\ding{55}}
+\newcommand{\xpl}{\ding{55}$_{PL}$}
+\newcommand{\ck}{\ding{51}}
+\newcommand{\cpl}{\ding{51}$_{PL}$}
+\newcommand{\cpo}{\ding{51}$_{pol}$}
+
+% for netcore
+\newcommand{\nc}[1]{{\tt #1}}
+\newcommand{\mnc}[1]{\ensuremath{\text{{\tt #1}}}}
+
+\newcommand{\RF}{\ensuremath{T_{\mathit{fmla}}}}
+\newcommand{\TT}{\ensuremath{T_{\mathit{term}}}}
+\newcommand{\PE}{\ensuremath{T_{\mathit{pe}}}}
+\newcommand{\EP}{\ensuremath{T_{\mathit{pred}}}}
+\newcommand{\EA}{\ensuremath{T_{\mathit{act}}}}
+
+\newcommand{\mdlS}{\ensuremath{S}}
+\newcommand{\mdlSplus}{\ensuremath{\mdlS^{\uparrow}}}
+\newcommand{\rin}{\ensuremath{R_{in}}}
+\newcommand{\rout}{\ensuremath{R_{out}}}
+\newcommand{\logp}{\ensuremath{\mathcal{P}}}
+\newcommand{\addR}{\ensuremath{R_{\mathit{add}}}}
+\newcommand{\delR}{\ensuremath{R_{\mathit{del}}}}
+\newcommand{\actR}{\ensuremath{\sigma_R}}
+
+%% Sequence description
+\newcommand{\seq}[1]{ \langle {#1}  \rangle } 
+\newcommand{\dseq}[2]{ \langle {#1} \mid {#2} \rangle } 
+\newcommand{\empseq}{\ensuremath{\langle \rangle}}
+
+%%%%
+
+% from exodus.tex
+
+\usepackage{listings}
+%\usepackage{url}
+
+\usepackage{caption}
+%\usepackage{subcaption}
+
+\usepackage{subfigure}
+\usepackage{thumbpdf}  %% TODO(adf): needed?
+\usepackage{color} %% TODO(adf): needed?
+\usepackage{booktabs}
+
+%Do typographic voodoo magic to get rid of most hfull boxes
+\usepackage{microtype}
+% Allow us to have bold ttfamily
+\usepackage{courier}
+
+\lstdefinelanguage{Flowlog}{
+sensitive=false,
+morekeywords={not,insert,delete,do,event,table,remote,incoming,outgoing,from,at,timeout,
+              on,into,where,and,or,send,to},
+% affects what gets line-wrapped in lstinline
+alsoletter={(,),\,,.,=},
+keywordstyle=\bfseries\ttfamily,
+captionpos=b,
+frame=lrtb,
+keepspaces=true,
+float=false,
+identifierstyle=\ttfamily,
+mathescape=true,
+basicstyle=\footnotesize\ttfamily,
+showstringspaces=false,
+firstnumber=1,
+numberstyle=\tiny,
+stepnumber=1,
+breaklines=true,
+numbers=left,
+numbersep=5pt,
+xleftmargin=10pt,
+%upquote=true,
+%columns=fullflexible,
+%flexiblecolumns=true,
+}
+
+\lstdefinelanguage{IOS}{
+sensitive=false,
+morekeywords={hostname,interface,access-list,access-group,ip,nat,route,address,overload,permit,deny,evaluate,extended},
+% affects what gets line-wrapped in lstinline
+alsoletter={-,/,.},
+keywordstyle=\bfseries\ttfamily,
+captionpos=b,
+frame=lrtb,
+keepspaces=true,
+float=false,
+identifierstyle=\ttfamily,
+mathescape=true,
+%basicstyle=\footnotesize\ttfamily,
+basicstyle=\footnotesize\ttfamily,
+showstringspaces=false,
+firstnumber=1,
+numberstyle=\tiny,
+stepnumber=1,
+breaklines=true,
+numbers=left,
+numbersep=5pt,
+xleftmargin=10pt,
+%upquote=true,
+%columns=fullflexible,
+%flexiblecolumns=true,
+}
+
+
+% for flowlog
+%\newcommand{\fl}[1]{\lstinline[language=Flowlog]{#1}}
+% for flowlog
+\newcommand{\fl}[1]{\lstinline[breaklines,breakatwhitespace]{#1}}
+\newcommand{\mfl}[1]{\ensuremath{\text{\lstinline[breaklines,breakatwhitespace]{#1}}}}
+
+\newcommand{\ios}[1]{\lstinline[language=IOS]{#1}}
+
+
+% This package needs to come last, or it can fail to resolve some links.
+\usepackage{cleveref}
+
+\def\figureautorefname{Fig.}
+\Crefname{section}{Sec.}{Sec.}

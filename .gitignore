@@ -12,3 +12,6 @@
 *.ind
 .DS_Store
 proposal.pdf
+.*.swp
+ferguson-dissertation.pdf
+*.synctex.gz

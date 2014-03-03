@@ -1,0 +1,104 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \flowlog\ NSDI camera-ready
+% C.R. PAGE LIMIT: 12 pages, NOT including references
+% 10 point, 2 column (same as submission)
+
+\documentclass[letterpaper,twocolumn,10pt]{article}
+% ``As of 2010, USENIX does not require endnotes 
+%\usepackage{usenix,epsfig,endnotes}
+\usepackage{usenix,epsfig}
+
+%% CHECK: These are allowed by USENIX?
+\usepackage{amssymb, amsmath, amsfonts, stmaryrd}
+\usepackage{url}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+% cleaner typography
+\usepackage{microtype}
+
+%\usepackage{fancyvrb}
+\usepackage{listings}
+
+\usepackage{cleveref}
+
+\include{tim-preamble}
+
+\newcommand{\flowlog}{Flowlog}
+
+\usepackage{pifont}
+\newcommand{\xm}{\ding{55}}
+\newcommand{\xpl}{\ding{55}$_{PL}$}
+\newcommand{\ck}{\ding{51}}
+\newcommand{\cpl}{\ding{51}$_{PL}$}
+\newcommand{\cpo}{\ding{51}$_{pol}$}
+
+\newcommand{\RF}{\ensuremath{T_{\mathit{fmla}}}}
+\newcommand{\TT}{\ensuremath{T_{\mathit{term}}}}
+\newcommand{\PE}{\ensuremath{T_{\mathit{pe}}}}
+\newcommand{\EP}{\ensuremath{T_{\mathit{pred}}}}
+\newcommand{\EA}{\ensuremath{T_{\mathit{act}}}}
+
+\newcommand{\mdlS}{\ensuremath{S}}
+\newcommand{\mdlSplus}{\ensuremath{\mdlS^{\uparrow}}}
+\newcommand{\rin}{\ensuremath{R_{in}}}
+\newcommand{\rout}{\ensuremath{R_{out}}}
+\newcommand{\logp}{\ensuremath{\mathcal{P}}}
+\newcommand{\addR}{\ensuremath{R_{\mathit{add}}}}
+\newcommand{\delR}{\ensuremath{R_{\mathit{del}}}}
+\newcommand{\actR}{\ensuremath{\sigma_R}}
+
+\newcommand{\sigloc}{\ensuremath{\Sigma_{loc}}}
+\newcommand{\sigrem}{\ensuremath{\Sigma_{rem}}}
+\newcommand{\sigst}{\ensuremath{\Sigma_{st}}}
+\newcommand{\sigin}{\ensuremath{\Sigma_{in}}}
+\newcommand{\sigout}{\ensuremath{\Sigma_{\mathit{out}}}}
+\newcommand{\sigeph}{\ensuremath{\Sigma_{\mathit{eph}}}}
+\newcommand{\denote}[1]{\ensuremath{\llbracket #1 \rrbracket}}
+\newcommand{\denotest}[1]{\ensuremath{\llbracket #1 \rrbracket_{st}}}
+\newcommand{\denoteev}[1]{\ensuremath{\llbracket #1 \rrbracket_{ev}}}
+\newcommand{\restrictto}[2]{\ensuremath{#1 \downharpoonright_{#2}}}
+\newcommand{\reduct}[1]{\ensuremath{\downarrow_{#1}}}
+
+% for flowlog
+\newcommand{\fl}[1]{\lstinline[breaklines,breakatwhitespace]{#1}}
+\newcommand{\mfl}[1]{\ensuremath{\text{\lstinline[breaklines,breakatwhitespace]{#1}}}}
+
+% for netcore
+\newcommand{\nc}[1]{{\tt #1}}
+\newcommand{\mnc}[1]{\ensuremath{\text{{\tt #1}}}}
+
+
+\lstdefinelanguage{Flowlog}{
+sensitive=false,
+morekeywords={not,insert,delete,do,event,table,remote,incoming,outgoing,from,at,timeout,
+              on,into,where,and,or,send,to,then},
+% affects what gets line-wrapped in lstinline
+alsoletter={(,),\,,.,=},
+keywordstyle=\bfseries\sffamily,
+captionpos=b,
+frame=lrtb,
+keepspaces=true,
+float=htpb,
+identifierstyle=\ttfamily,
+mathescape=true,
+basicstyle=\footnotesize\ttfamily,
+showstringspaces=false,
+firstnumber=1,
+numberstyle=\tiny,
+stepnumber=1, 
+breaklines=true,
+numbers=left,
+numbersep=5pt,    
+xleftmargin=10pt,               
+%upquote=true,
+%columns=fullflexible,
+%flexiblecolumns=true,
+}
+
+%\lstset{prebreak=\raisebox{0ex}[0ex][0ex]
+        %{\ensuremath{\rhookswarrow}}}
+
+% Default to \flowlog\ language (required by inlining)
+\lstset{language=Flowlog}

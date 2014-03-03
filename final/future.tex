@@ -1,0 +1,133 @@
+% !TEX root = ferguson-proposal.tex
+
+%While the principals in \sys are
+%authenticated, they do not need to be trusted as privileges are
+%restricted by the system's semantics. We recognize, however, that it
+%may be possible to exploit combinations of privileges in an untoward
+%fashion, and leave such investigation and prevention as future work.
+
+\chapter{Proposed Work}
+\label{sec:proposed}
+
+A key feature of \sys is its \emph{participatory} nature -- it enables
+users to participate in the management of the network and directly affect its 
+configuration without involving a fully-trusted administrator.
+While the \sys controller authenticates users and can log operations for
+audit pruposes, users may not always behave appropriately, either willfully 
+or accidentally. Because there are multiple independent parties directing the 
+configuration of the network, we would like to prevent ``bad''
+configurations automatically. ``Bad'' configurations can take many forms:
+
+{\singlespacing
+\begin{enumerate}
+\item Configurations with routing loops 
+\item Configurations with blackholes (\ie, routes which cause packets to be dropped)
+\item Routes which violate isolation guarantees, which must be met for practical 
+(eg, ``don't let customer traffic on the administrative network''), contractual 
+(eg, ``don't allow Pepsi to see Coke's traffic''), or legal reasons (eg, ``don't 
+allow medical traffic to reach the wider internet'')
+\item Confusing configurations, in which rules are ``shadowed'' by other rules, thus 
+obscuring the resulting actions, or which have superfluous rules, which will 
+never have an effect.
+\end{enumerate}
+}
+
+Before continuing, we wish to note that there are two distinct questions here. 
+The first is whether making a proposed change causes the network configuration to 
+become ``bad,'' and the second is whether granting a proposed privilege
+(a capability) to make a certain set of changes \emph{can} lead to bad
+configurations in the future. Considering \sys as a capability-based system, 
+the first is about the exercise of existing capabilities, and the second is 
+about granting new capabilities. Or, in the language of \sys itself, the first 
+is about modifications to the PolicyTree, and the second is about modifications 
+to the ShareTree.
+
+The recently developed Header Space Analysis (HSA)~\cite{HSA} and
+VeriFlow~\cite{VeriFlow} provide tools to detect (and optionally prevent) many bad
+configurations from becoming instantiated in the network. These techniques are
+independent of the controller platform, and intercept and analyze update traffic
+destined to the switches from the controller. By running HSA or VeriFlow as part
+of the \sys controller, requests which create bad configurations could be prevented.
+
+However, HSA and VeriFlow cannot help users reason about \emph{potential}
+configurations directly. Potential configurations include the space of configurations
+made possible by granting a new privilege in \sys, newly compiled configurations
+triggered by adding or removing physical elements in the network, and new
+policies introduced by modifying the SDN controller (\eg, by loading a new module
+or application). Reasoning about these potential configurations is a form
+of \emph{change-impact analysis}, and PANE's current conception of the
+\emph{strict} keyword is a primitive version of  this -- a
+``set and check for expected result''-type operation.
+
+These tools are also important for letting an administrator run ``what-if'' scenarios, 
+or ask questions about the existing policy. They are helpful, for example, when 
+a new administrator has joined an organization and needs to understand the 
+rules created by a previous administrator. For example:
+
+{\singlespacing
+\begin{enumerate}
+\item is everything configured for service X to work? 
+\item can faculty members work with service X? if not, what do we need to adjust?
+\item can I block any host in the network? if not, which hosts can I block?
+\item who can block any host in the network? or who can block any English 
+department host?
+\end{enumerate}
+}
+
+These last questions are about reachability analysis on the capability graph.
+
+Analyzing these questions in \sys can be complicated because some shares 
+may apply to a user's traffic, while other shares may apply to an application's 
+traffic: How do we block Alice from exercising a privilege which she can get using 
+a share for application Foo? What is the appropriate place in the ShareTree to install such 
+a block? This block might be viewed as an \emph{invariant} on the ShareTree which we 
+would like to maintain if, for example, the share granted to application Foo 
+was created \emph{after} the block on Alice was created. In this simple example, 
+as long as a ``deny overrides allow'' policy operator was in the right part of 
+the tree where these two policy atoms met, we would be fine -- but what if the 
+policy operator changes? We should be able to alert the administrator to the 
+effect of this change.
+
+A second ShareTree invariant we are interested in supporting is one to
+maintain a level of baseline fairness between users. More concretely, can
+we prevent a misconfiguration of the token buckets, such that one user could
+monopolize the reservations on a link? Or that some user may never be able
+to reserve bandwidth?
+
+Finally, because SDN controllers provide programmers and administrators
+with an abstraction of the network, we are interested in the fragility of this
+abstraction. What would be the impact of removing a switch or a link? Is there
+sufficient redundancy to support critical flows, such as telepresence feeds
+for remote surgery, during these failures?
+
+By combining an SDN controller's global knowledge with the structured
+information provided by \sys's end-users, our proposed work seeks to give
+administrators the necessary answers to delegate their network's management
+with confidence.
+
+\begin{comment}
+Several previous works have explored how to prevent these configurations in 
+non-participatory networks, including:
+* Margrave: 
+http://www.cs.brown.edu/~sk/Publications/Papers/Published/nbfdk-margrave-firewal
+l/paper.pdf
+* Header Space Analysis: 
+https://www.usenix.org/system/files/conference/nsdi12/nsdi12-final8.pdf
+* Feamster's RCC: http://nms.csail.mit.edu/papers/rcc-nsdi-camera.pdf
+
+and could be applied to detecting bad configurations at the PolicyTree-level. 
+When applied in an online fashion (that is, when a new rule is considered for 
+insertion), these tools provide a type of "change-impact analysis" -- that is, 
+does the impact of the change I just made agree with my intent? The key 
+challenge here is to capture the user's intent in some reasonable fashion.
+
+It's about 
+running a tiny version of that impact analysis tool in the frontend to 
+determine if we should accept the proposed change.  One of the cool things 
+about `strict` is that it helps when there are many concurrent updates 
+happening. If I read the state of the PolicyTree, decide on a rule, and set it 
+with `strict`, I know that it will apply exactly as I intended. However, if 
+there are have been updates which would have affected it, then the change is 
+rejected; this is why `partial` may better because it will be applied either 
+way.
+\end{comment}

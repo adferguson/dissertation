@@ -1,0 +1,48 @@
+\documentclass[10pt,notables]{brownthesis}
+%\usepackage[margin=1in]{geometry}
+\usepackage{prelude}
+
+\begin{document}
+
+\VerbatimFootnotes
+
+\doublespacing
+\pagenumbering{alph} % hack to suppress hyperref errors
+
+\title{Policy Delegation and Migration for Software-Defined Networks}
+
+\author{Andrew Ferguson}
+\degrees{B.~S.~E., Princeton University, 2008 \\
+               Sc.~M., Brown University, 2011}
+
+\principaladvisor{Rodrigo Fonseca}
+\reader[Brown University]{Shriram Krishnamurthi}
+\reader[Princeton University]{Jennifer Rexford}
+\dean{Peter~M. Weber}
+
+%\abstractpage -- to create two copies of abstract when printing!
+%\abstractpage
+\beforepreface
+\include{acks}
+\afterpreface
+
+\include{intro}
+
+\include{overview}
+\include{delegation}
+%\include{dynamic}
+\include{conflicts}
+\include{system}
+\include{evaluation}
+%\include{discussion}
+%%%%%%%%%%\include{future} ..... from proposal
+\include{related}
+%\include{conclusion}
+
+\include{flowlog}
+\include{exodus}
+
+\bibliographystyle{plain}
+\bibliography{ferguson-dissertation,exodus1,exodus2}
+
+\end{document}

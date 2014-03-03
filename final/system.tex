@@ -1,0 +1,162 @@
+% !TEX root = ferguson-proposal.tex
+\chapter{The \sys Controller}
+\label{sec:FullSystem}
+
+%\remark{
+%{\em Expected Outcome:} Reader understands the smaller components of the system 
+%and how the share tree and the policy trees fit together with them.
+%}
+
+%\remark{
+%Need to say we got the policy tree implementation and compiler described
+%earlier, along with several other components that are in the figure, but not
+%detailed in this paper.
+%}
+
+The complete \sys system integrates the previously described
+components into a fully-functioning SDN controller, as depicted in
+\autoref{f:system}.  It manages simultaneous connections with the
+network's principals and its switches. In this role, it is
+responsible for implementing both our participatory networking API,
+as well as the details of computing default forwarding routes,
+transmitting OpenFlow messages, and reacting to network changes such
+as switches joining and links failing.  To accomplish these tasks,
+the \sys controller maintains three data structures: the share tree,
+a sequence of policy trees, and a \emph{network information base}
+(NIB), described below.
+
+We have developed a prototype \sys controller using Haskell and the
+Nettle library for OpenFlow~\cite{Voellmy:2011}. Although
+we chose OpenFlow as our substrate for implementing \sys, participatory networking's design
+does not depend on OpenFlow. \sys could be implemented using other
+mechanisms to control the network, such as 4D~\cite{Greenberg:2005},
+MPLS, or a collection of middleboxes.
+
+A prototype release is available on Github, and we provide a virtual
+machine for Mininet-based evaluation on our website.\footnote{\url{http://pane.cs.brown.edu}.} The release also includes a Java library
+which implements an object-oriented interface to \sys's text API.
+
+The \sys controller is an entirely event-driven multicore program.
+The three primary event types are incoming \sys API messages,
+incoming OpenFlow messages, and timer events triggered by the start
+or finish of previously accepted requests or realizable hints.
+
+API messages always specify a share on which they
+are operating. When a message arrives, the \sys controller first
+uses the share tree to determine whether it is authorized, and then,
+for requests, whether it is feasible by consulting the policy
+trees, as described in the previous chapters.
+
+When requests start and expire, the \sys controller compiles the new
+policy tree to a set of switch flow tables, translating
+high-level actions to low-level operations on individual
+switches in the network. For example, a $\priv{Reserve}(n)$ action
+becomes a circuit of switch queues and forwarding rules that direct
+packets to those queues.  As we will describe next, \sys's runtime
+uses its NIB and a default forwarding algorithm to realize this and
+other actions.  Our implementation constructs a spanning tree and
+implements MAC learning as its forwarding algorithm.
+
+When possible, \sys uses the slicing extensions to OpenFlow 1.0 to
+create and configure queues, and out-of-band commands when necessary.  While
+OpenFlow allows us to set expiry timeouts on flow table entries, our
+controller must explicitly delete queues when reservations expire.
+
+As Reitblatt, et al.~\cite{reitblatt12consistent} articulate, it is
+a challenge to update switch configurations without introducing
+inconsistent, intermediate stages. Our implementation does not
+presently address this issue; we anticipate confronting this
+problem in the future.
+
+\section{\sys's Network Information Base}
+\label{sec:NIB}
+
+A network information base (NIB) is a database of network elements
+-- hosts, switches, ports, queues, and links -- and their
+capabilities (\eg, rate-limiters or per-port output queues on a
+switch). The runtime uses the NIB to translate logical actions to a
+physical configuration, determine a spanning tree for default packet
+forwarding, and to hold switch information such as manufacturer,
+version, and its ports' speeds, configurations, and statistics.
+
+For example, \sys's runtime implements a bandwidth reservation,
+$(M,\priv{Reserve}(n))$, by querying the NIB for the shortest path
+with available queues between the corresponding hosts.  Along this
+path, \sys creates queues which guarantee bandwidth $n$, and flow
+table rules to direct packets matching $M$ to those queues. We chose
+this greedy approach to reserving bandwidth for simplicity, and
+leave the implementation of alternatives as future work.
+
+\sys also uses the NIB to install $\textbf{Deny}$ rules as close as
+possible to the traffic source. If the source is outside our
+network, this is the network's gateway switch. If the source is
+inside the network, packets are dropped at the closest switch(es)
+with available rule space.
+
+The NIB we implement is inspired by Onix~\cite{Koponen:2010}. It
+uses a simple discovery protocol to find links between switches, and
+information from our forwarding algorithm, such as ARP requests, to
+discover the locations of hosts. 
+
+\section{Additional Features}
+
+The \sys runtime supports several additional features beyond the
+requests, hints, and queries previously described. Principals are
+able to query \sys to determine their available capabilities,
+examine the schedule of bandwidth availability, create
+sub-shares, and grant privileges to other principals.  \sys's API
+also provides commands to determine which existing requests and
+shares can affect a specified flowgroup; this is particularly useful
+for debugging the network, such as to determine why certain traffic
+is being denied. 
+
+Beyond the API, the \sys controller also includes an administrative
+interface which displays the current state and configuration of the
+network, real-time information about the controller's performance
+such as memory and CPU usage, and allows the dynamic adjustment of
+logging verbosity.
+
+\section{Fault Tolerance and Resilience}
+\label{sec:dynamics}
+
+While the principals in \sys are
+authenticated, they do not need to be trusted as privileges are
+restricted by the system's semantics. We recognize, however, that it
+may be possible to exploit combinations of privileges in an untoward
+fashion, and leave such prevention as future work.
+
+Our prototype implementation of \sys is currently defenseless against
+principals which issue excessive requests; we leave such protection against
+denial-of-service as future work, and expect \sys's requirement for
+authenticated principals to enable such protections.
+
+The \sys controller must consider two types of failures.  The first is
+failure of network elements, such as switches or links, and the
+second is failure of the controller itself.
+
+When a switch or link fails, or when a link's configuration changes,
+the \sys runtime must recompile the policy tree to new individual
+switch flow tables, as previously used paths may no longer be
+available or acceptable. Because the underlying network has changed,
+this recompilation step is not guaranteed to succeed.  If this
+happens, we defer to \sys's first come-first serve service model,
+greedily replaying requests to build a new policy tree which
+does compile; implementing this simply requires annotating the
+current policy tree's policy atoms with the order in which they were
+created.  Developing a more sophisticated approach to
+re-constructing a feasible policy tree, perhaps taking
+advantage of priorities, or with the goal of maximizing the number
+of restored requests, remains as future work. 
+
+To handle failure of the controller, we can keep a database-like
+persistent redo log of accepted requests, periodically compacted
+by removing those which have expired. Upon recovery, the
+\sys controller could restore its state from this log.  In production
+settings, we expect the \sys controller to be deployed on multiple
+servers with shared, distributed state. Switches would maintain
+connections to each of the controllers as newer OpenFlow
+specifications support. We leave the design and analysis of both
+options as future work.  Because network principals use \sys in an
+opt-in fashion to receive predictable performance, a complete
+runtime failure would simply return the network to its current state
+of providing best-effort performance only.

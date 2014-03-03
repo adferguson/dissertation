@@ -1,0 +1,68 @@
+\chapter{Discussion and Future Work}
+\label{sec:discussion}
+
+%{\color{red}
+%AF:Rodrigo: Our relation with the laissez-faire nature of today's networks and the
+%end-to-end principle.?
+%RF:Nothing to declare now, I think we should skip the philosophical discussions for now...
+%}
+
+%% Integrate with other Frenetic components %%
+
+The \sys prototype implements a complete OpenFlow controller: it
+determines network-wide policies by realizing requests and hints,
+monitors switches to respond to queries, determines routing, and
+updates switches as the policy changes. We've built each of
+these components as separate modules, and compose them using
+composition abstractions derived from
+Frenetic~\cite{Foster:2010}. Frenetic allows SDN controllers to be
+built from independent modules. Therefore, it would be straightforward
+to compose \sys with other Frenetic modules.
+
+%% Trees vs. DAGs %%
+
+In the \sys prototype, policies are arranged as trees. This is
+not a fundamental design decision -- trees make it easy to implement
+resource accounting and trace the provenance of delegation decisions. However,
+generalizations such as DAGs should be possible.
+
+An interesting generalization of \sys that we plan to implement is a
+more flexible language for requests. A principal should be able to
+describe the resources they need as simple constraints. For example,
+``reserve 5 Gbps for 1 hour within the next 5 hours.'' Such requests
+would give the \sys controller more scheduling flexibility. They would
+thus improve network performance and lead to greater accepted requests.
+
+%%  New kinds of requests and devices %%
+
+We are also investigating allowing principals to request other kinds
+of resources, \eg latency and jitter. Current OpenFlow implementations
+lack support for controlling these traffic properties. In the
+future, we hope to borrow techniques from works such as Borrowed
+Virtual Time~\cite{BVT} or Hierarchical Fair Service
+Curves~\cite{Stoica:1997}, which integrate and balance the needs of
+throughput- and latency-sensitive processes.
+
+\tightparagraph{\sys as a building block} We believe the primitives
+provided by \sys could serve as an implementation substrate for a
+variety of recent proposals in the networking literature.
+
+For example, Coflow~\cite{Chowdhury12coflow} proposes an abstraction which
+groups several related flows, allowing the network control-plane to better
+optimize an application's communication. By adding support for transactions, we
+expect \sys could be used to implement Coflow -- each coflow would map
+to a sequence of \sys requests grouped by a transaction.
+
+FairCloud~\cite{Popa:2012}, which develops several policies for fairly
+dividing datacenter bandwidth, should be implementable using \sys's
+reservation and rate-limit requests.
+
+Finally, because \sys allows applications to reserve guaranteed
+bandwidth, such applications could skip TCP's slow start phase, or
+even allow for the network control-plane to be involved in setting
+congestion control and other parameters, as in proposals such as
+XCP~\cite{Katabi:2002} and OpenTCP~\cite{OpenTCP}.
+
+\sys could also integrate better support for middlebox-based services,
+perhaps by integrating the approach advocated for by Gember,
+\etal~\cite{Gember:2012}.

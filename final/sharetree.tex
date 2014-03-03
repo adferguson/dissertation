@@ -1,0 +1,34 @@
+\chapter{Share Tree Semantics}
+
+\begin{figure}
+
+\begin{displaymath}
+\begin{array}{lrcl}
+
+\textrm{predicates} & 
+  M & = & \emptyset \mid \overrightarrow{\langle H,V \rangle} \\
+\textrm{principals} &
+  \textbf{prin}  & = & \cdots \\
+\textrm{actions} &
+  A & = & \textbf{Allow} \mid \textbf{Deny} \mid \textbf{GMB}($n$) 
+          \mid \textbf{0} \\
+\textrm{requests} &
+  R & = & t_s \times t_f \times M \times A \times \textbf{prin} \\
+\textrm{shares} & 
+  S & = & 2^{R} \times 2^{A} \times M \times 2^{\textbf{prin}} \\
+\textrm{share trees} &
+  T & = & S \times 2^{T}
+\end{array}
+\end{displaymath}
+
+\inference
+{\forall t . \textbf{GMB}\langle\sigma\left\{ n \mid \left(t_s,t_f, \_, \textbf{GMB}(n), \_ \right) \in 2^{R},2^{T} \wedge t_s \le t \le t_f \right\}\rangle \le 2^{A} \\
+ \forall (t_s,t_f,M_R,A_R,\textbf{prin}_R) \in 2^{R} . M_R \subseteq M \wedge A_R \le 2^{A} \wedge \textbf{prin}_R \in 2^{\textbf{prin}} \\
+\forall T \in 2^{T} \vdash T : \textrm{ok}
+}
+{\vdash (2^{R},2^{A},M,2^{\textbf{prin}},2^{T}) : \textrm{ok}}
+
+\caption{Static Semantics of Share Trees}
+
+\end{figure}
+

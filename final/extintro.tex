@@ -1,0 +1,205 @@
+
+\chapter{More detailed introduction}
+
+\remark{
+{\em Expected Outcome:} Reader understands the goals of participatory 
+networking, and the division between \sys's static and dynamic components.
+Reader understands the problem of protection and delegation, and why we
+need the ShareTree
+}
+
+We begin our exploration of participatory networking by following a few
+example interactions between the \sys controller and principals on the
+network. These examples give a
+flavor for how we use \sys in our environment, and introduce some of
+the challenges involved in its implementation.
+We then consider some of the additional considerations that influenced
+\sys's design, which we will detail in the following chapters
+(\S\ref{sec:ShareTree}-\ref{sec:FullSystem}).
+
+\section{A Taste of \sys}
+
+Principals interact with the \sys controller using a simple text-based protocol.
+We start with the sequence of requests
+necessary for an end-user, Alice, to reserve guaranteed bandwidth
+for her flows. First, the network administrator must create a
+\emph{share} for her flows which carries such a privilege: % adf-wt
+%\begin{small}
+\begin{verbatim}
+NewShare aliceBW for (user=Alice)
+  [reserve <= 10Mb] on rootShare.
+\end{verbatim}
+%\end{small}
+Loosely speaking, a \sys share is a set of restricted network privileges
+which can be exercised by specific users; we will refine this definition in
+\xref{sec:ShareTree}.
+{\color{red}
+This share can be exercised on packets for which Alice is the sender
+(
+%\begin{small}
+\verb/user=Alice/
+%\end{small}
+) } and allows the share's principals to reserve up to
+10Mbps of guaranteed bandwidth, and does not authorize other requests.
+Next, the administrator allows Alice to use this share:
+%\begin{small}
+\begin{verbatim}
+Grant aliceBW to Alice.
+\end{verbatim}
+%\end{small}
+Finally, Alice can request that her web traffic 
+receive guaranteed bandwidth of 8Mbps for ten minutes, starting
+twenty minutes in the future:
+%\begin{small}
+\begin{verbatim}
+reserve(user=Alice,dstPort=80) = 8Mb
+  on aliceBW from +20min to +30min.
+\end{verbatim}
+%\end{small}
+{\color{red}
+While
+%\begin{small}
+\verb/aliceBW/
+%\end{small}
+currently permits Alice to reserve bandwidth indefinitely,
+a token bucket can be applied to limit
+Alice's reservations (\xref{sec:gmb-requests}).
+}
+If Alice attempted to make a second reservation during an overlapping
+time period (\eg, \verb/+25min to +35min/), the \sys controller would
+reject her request because the combined reservations would have exceeded
+the limit of 10Mbps set on her share.
+
+\vskip 0.5em
+
+In this second example,
+a network administrator can create shares to delegate access control.
+The following \sys request creates a share for Bob, who is using
+the IP address 10.0.0.2, which allows him to deny traffic to his computer,
+and which cannot be used for other requests:
+%\begin{small}
+\begin{verbatim}
+NewShare bobAC for (dstHost=10.0.0.2)
+  [deny = True] on rootShare.
+Grant bobAC to Bob.
+\end{verbatim}
+%\end{small}
+Using this share, Bob can, for example, block traffic from
+Eve's host (10.0.0.3) for the next five minutes:
+%\begin{small}
+\begin{verbatim}
+deny(dstHost=10.0.0.2, srcHost=10.0.0.3)
+  on bobAC from now to +5min.
+\end{verbatim}
+%\end{small}
+{\color{blue}
+If Bob attempts to block traffic to Charlie's computer (10.0.0.4)
+with this command:
+%\begin{small}
+\begin{verbatim}
+deny(dstHost=10.0.0.4, srcHost=10.0.0.3)
+  on bobAC.
+\end{verbatim}
+%\end{small}
+his request will be rejected because its flowgroup is
+not a subset of the flowgroup in
+%\begin{small}
+\verb/bobAC/
+%\end{small}
+. If Bob attempts to block all traffic from Eve by not including the
+%\begin{small}
+\verb/dstHost/
+%\end{small}
+restriction, his request will also be rejected.
+}
+
+\vskip 0.5em
+
+While basic, these examples illustrate the standard workflow for
+using \sys. In each case, a user with existing privileges delegated a
+restricted portion of those privileges to another principal. Subsequently,
+the second principal was able to invoke the capability dynamically.
+
+These examples also show the two checks performed by the \sys controller
+when a capability is invoked. First, \sys determines whether
+the principal has been granted the appropriate privileges. Second, it
+determines whether previously accepted requests preclude the new
+request from being granted. For the first check, the \sys controller
+maintains a data structure called the \emph{Share Tree} (\xref{sec:ShareTree});
+for the second, a sequence of data structures called the \emph{Policy Trees}
+(\xref{sec:PolicyTrees}). \sys maintains a Policy Tree for each event time point.
+
+As more realistic examples, we have adapted several real applications to use
+\sys. For example, our version of Hadoop uses \sys to create bandwidth
+reservations during the shuffle phase and while replicating data in HDFS,
+and our version of SSHGuard uses \sys to block malicious
+traffic in the network, before it reaches the host's access link.
+We further describe and evaluate these implementations
+in \xref{sec:ApplicationUsage}.
+
+
+\section{The Place for \sys}
+
+Participatory networking is designed for networks within a single administrative
+domain including corporate WANs, datacenters, campus or enterprise networks,
+and home networks. In such networks, there is, logically, a single owner from
+which authority can be delegated. \sys's design does not rely on changes
+to the end-hosts, such as the use of a particular hypervisor, making it suitable
+for networks with user-owned or managed devices.
+While the principals in \sys are authenticated, they do not need to be trusted
+as privileges are restricted by the system's semantics. We recognize, however,
+that it may be possible to exploit combinations of privileges in an untoward fashion,
+and leave such investigation and prevention as future work.
+
+A participatory network is backwards-compatible with exiting networked
+applications -- principals submit requests only to receive \emph{predictable}
+behavior from the network. Unmodified applications continue to receive the
+best-effort performance of existing packet networks.
+While \sys requires application developers to modify their programs
+to receive its benefits, participatory networking is not designed for
+any particular application. The primitives, programmability and visibility
+into network state which it provides make it a good substrate for developing 
+systems with a greater focus on particular applications or scenarios, as
+we describe in \xref{sec:building-block}.
+
+As we saw in the examples above, our initial design implements a first
+come-first serve service model, where the controller accepts or rejects requests
+in a single-threaded fashion. This model is simple to understand and implement,
+and treats all principals equally, as they are assured that
+accepted requests will be implemented (subject to hardware failures, as we
+discuss in \xref{sec:dynamics}). Although we have not
+implemented them, participatory networks could support priorities across
+principals. We describe how to implement priorities and their potential
+ramifications in \xref{sec:conflict-resolution-operators}.
+
+\subsection{SHOULD WE {\color{red} NAME} THIS SUB-SUB-SECTION?}
+
+By default, requests in \sys never expire. This enables support for
+fixed rules, such as a ban on TCP port 23 (telnet) traffic.
+We envision \sys being used to establish
+such rules, rather than a separate SDN application, so \sys can evaluate
+dynamic requests within the context of both the fixed rules and
+previous dynamic requests. This combination allows the \sys controller to detect,
+resolve, and report conflicts between all rules in the network.
+We expand upon \sys's position in the wider SDN ecosystem in \xref{sec:discussion}.
+
+Because network clients may leave the network without notifying the controller,
+there is a potential for accepted requests to become stale if a principal
+leaves the network. In order to prevent the build-up of stale requests, \sys
+can restrict principals from making perpetual requests, requiring them to
+periodically renew their requests. In this configuration, resource requests
+are similar to leases.
+
+\sys offers two approaches for restricting the time length of requests.
+The first is basic time limits -- requests made under such limits may not
+last longer than a fixed number of seconds. These limits
+may be appropriate for access control-type requests, for example.
+
+The second approach is to restrict a principal's capabilities using a
+token bucket-type model, similar to rate-limiting token buckets used in {\color{red} XXX}.
+This approach is appropriate for privileges which request resources
+shared across many principals, such as for guaranteed bandwidth, as
+we detail in \xref{sec:gmb-requests}. When restricted by a token bucket,
+principals must balance the ``cost'' of their requests against the ``budget''
+provided by their token bucket; we leave the development of future
+models to restrict requests as future work.

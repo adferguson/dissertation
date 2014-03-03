@@ -1,0 +1,96 @@
+\begin{table*}
+\centering 
+\begin{small}
+\[
+\begin{array}{ll@{\,}c@{\,}ll}
+\hline
+\textrm{Share} & S & \in & 
+%
+\{P\} \times \{F\} \times \{ \panepriv \} & 
+%
+  \textrm{A share gives principals some privileges to
+    affect a set of flows.} \\
+%
+\textrm{Principal} & P & \mathord{::=} &
+%
+\paneprin{\textrm{user}}{\textrm{host}}{\textrm{app}} &
+% 
+  \textrm{A triple consisting of an \emph{application}, running on a
+    \emph{host} by a \emph{user}.} \\
+%
+\textrm{Flow} & F & \mathord{::=} & \langle\textbf{srcIP}\mathord{=}n_1,\textbf{dstIP}\mathord{=}n_2, &
+%
+  \textrm{A set of packets with shared properties: source and destination IP address,} \\
+%
+& & & \quad\textbf{proto}\mathord{=}n_3,\textbf{srcPort}\mathord{=}n_4,\textbf{dstPort}\mathord{=}n_5\rangle &
+%
+  \qquad\textrm{transport protocol, and source and destination transport ports.}\\
+%
+\textrm{Privilege} & \panepriv & ::= &
+%
+\textbf{CanDeny}~n \mid \textbf{CanAllow}~n &
+%
+\textrm{The privileges to allow or deny traffic for up to $n$ seconds (optional).} \\
+%
+& & & \mid \textbf{CanReserve}~n \mid \textbf{CanRateLimit}~n & 
+%
+  \textrm{The privileges to reserve bandwidth or set rate-limits, up to
+    $n$ MB.} \\
+ %
+& & & \mid \textbf{CanWaypoint}~\{\textit{IP}\}\mid \textbf{CanAvoid}~\{\textit{IP}\} & 
+%
+  \textrm{The privileges to direct traffic through or around particular IP addresses.} \\
+\hline
+%
+\textrm{Message} & \textit{Msg} & \mathord{::=} &
+%
+P:\{F\} : S \rightarrow ( \panereq~\panetspec \mid \panehint~\panetspec \mid \panequery) &
+%
+\textrm{A message from a principal with a request, hint, or query using a share.} \\
+%
+\textrm{Time Spec} & \panetspec & ::= & \textbf{from}~t_1~\textbf{until}~t_2 &
+%
+\textrm{An optional specification from time $t_1$ until $t_2$.} \\
+%
+\textrm{Request} & \panereq & \mathord{::=} & 
+%
+\textbf{Allow} \mid \textbf{Deny} &
+%
+\textrm{Request to allow/deny traffic.}
+\\
+%
+& & &  \mid \textbf{Reserve}~n \mid \textbf{RateLimit}~n~ &
+%
+  \textrm{Request to reserve $n$ MB or rate-limit to $n$ MB.} \\
+%
+& & & \mid \textbf{Waypoint}~\textit{IP} \mid \textbf{Avoid}~\textit{IP} &
+%
+\textrm{Waypoint/avoid traffic through a middlebox with the given IP address.} \\
+%
+\textrm{Query} & \panequery & \mathord{::=} &
+%
+\textbf{TrafficBetween}~\textit{srcIP}~\textit{dstIP} \mid ... &
+%
+\textrm{Query the total traffic between two hosts.} \\
+%
+\textrm{Hint} & \panehint & \mathord{::=} &
+%
+\textbf{Duration}~t \mid ... & \textrm{Hint that the flow's duration is $t$.} \\
+%
+\textrm{Policy Atom} & \panepolatom & \mathord{::=} & 
+%
+P:\{F\} \rightarrow \panereq~\panetspec &
+%
+\textrm{A requested modification of network state.} \\
+%
+& & \mid & \textbf{Hint}~P:\{F\} \rightarrow
+\panereq~\panetspec &
+%
+\textrm{A realized hint; it may be removed if it conflicts with a future request.} \\
+\hline
+\end{array}
+\]
+\end{small}
+\caption{Main concepts in \sys}  \vspace{-1em}
+\label{tab:concepts}
+\end{table*}

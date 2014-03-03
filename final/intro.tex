@@ -1,0 +1,218 @@
+% !TEX root = ferguson-proposal.tex
+\chapter{Introduction}
+
+{\bf Thesis Statement} Modern applications can benefit from read and
+write interaction with a network's control-plane, yet such interaction is
+currently unsupported due to security and fairness concerns. We design
+a practical and feasible platform that addresses these challenges,
+and demonstrate its benefits. In addition, we can support a network's
+administrator in the safe and effective use of such a platform.
+
+\vskip 1em
+
+\section{The Need for Delegated Network Management}
+
+Today's applications, whether running in datacenters, enterprise, campus, or
+home networks have an increasingly difficult relationship with the
+network. Networks are the shared fabric interconnecting users, applications,
+and devices, and fluctuating, unpredictable network performance and reliability
+create challenges and uncertainty for network administers, application
+developers, and frustrated end-users alike. As a result, software developers,
+researchers, and administrators expend considerable effort to work \emph{around}
+the network rather than work \emph{with} the network: video conferencing
+applications constantly probe network bandwidth~\cite{SkypeTraffic}, overlay networks are used to
+re-route traffic~\cite{SkypeTraffic}, network paths are reactively reconfigured based on inferences~\cite{alfares10hedera},
+and humans are required to throttle heavy network loads in response to planned
+or unplanned shifts in traffic matrices.
+%
+Using humans for network control, however, is no panacea, having
+been responsible for significant recent outages at both
+Github~\cite{githubOutage} and
+Amazon~\cite{awsOutage}.
+
+At a minimum, packet networks forward data, collect traffic statistics, and
+divide traffic based on addresses or other header fields. Increasingly, modern
+networks also provide additional services, often implemented via middleboxes,
+such as firewalling, compression, encryption, threat-detection, acceleration, and caching.
+Yet, all of these features are, for the most part, invisible to the applications
+passing traffic through them, or only available via rudimentary interfaces
+such as DSCP header bits.
+
+With greater visibility into and control of the network's state,
+a conferencing application could request bandwidth for a video call,
+and learn via the network that, while only a guaranteed audio call is available
+now, it could reserve a video call in one hour.
+An intrusion detection script on a user machine could request the
+\emph{network} filter traffic from a specific source.
+An important RPC service could protect latency-sensitive flows from competing
+background traffic.
+%An RPC service could inform the network that its flows will be short, but with a
+%deadline, which could enable shortest-deadline-first scheduling at
+%the switches~\cite{wilson11d3}.
+Or, a MapReduce-style application could request
+bandwidth guarantees, or maximally disjoint paths, to improve performance of its shuffle phase.
+
+Such examples suggest that an API should exist between the network's
+control-plane and its users, applications, and end-hosts. These
+principals need both \emph{read} access, to learn the network's
+present and expected future conditions, and \emph{write} access, to
+make independent configuration changes for their own benefit, and
+provide helpful knowledge, such as future traffic demands, directly
+to the network's control-plane.
+
+In this thesis, we introduce the concept of \emph{participatory
+networking}, in which the network provides
+a configuration API to its users, applications, and end-hosts, and
+present the design, implementation, and evaluation of the first
+practical participatory networking controller for an
+OpenFlow-enabled software-defined network.
+
+In the absence of security guarantees and limited authorities,
+participatory networks would be places of anarchy. To be usable,
+such networks must provide isolation for their independent
+principals, preventing malicious users from hogging bandwidth,
+dropping packets, or worse. While isolation could be provided
+through network virtualization, we believe that is not always the
+right abstraction, as it hides the fundamentally shared aspect of
+networks.  
+
+% new
+By contrast, participatory networks reveal the conflicts between
+their principals, and directly expose the control-plane's view of
+the network. Principals can use this greater awareness to make
+better-informed decisions about how to use or reconfigure the
+network.
+
+% new
+
+\section{Software-Defined Networking}
+
+The recent development of Software-Defined Networks (SDNs)
+%which provide a logically centralized abstraction of network
+%control,
+%built on programmable devices,
+offers a platform to realize the vision of participatory networks~\cite{Greenberg:2005,McKeown:2008}.
+SDNs separate
+the logic that controls the network from its physical
+devices, allowing configuration \emph{programs} to operate on a
+high-level, global, and consistent view of the network. 
+%  allowing network-wide policies to be determined
+% centrally~\cite{Casado:2009, Gude:2008}, and expressed at a higher
+% level of abstraction than configuration of individual network
+% elements~\cite{Foster:2010,Hinrichs:2009, Kim:2010}
+This change has brought significant advances to datacenter and
+enterprise networks, such as high-level
+specification of access control~\cite{Nayak:2009} and
+QoS~\cite{Kim:2010}, safe experimentation~\cite{Sherwood:2010},
+in-network load-balancing~\cite{wang11wild}, and seamless VM 
+migration~\cite{Erickson:2008}.
+
+In a traditional network, the control-plane, which determines how
+to transmit packets, is distributed across the network's switches. Each
+switch independently runs distributed algorithms (\eg, Bellman-Ford) to determine the
+packet forwarding policy. By contrast, an SDN has a logically centralized
+controller, running on a commodity server platform, which calculates
+a forwarding policy (\eg, with Dijkstra's algorithm). The controller implements
+this policy by programming the switches' data-planes, which process
+traffic at line-rate.
+
+This programming is accomplished via a protocol such as
+OpenFlow~\cite{McKeown:2008}, which provides a common
+abstraction of a switch's data-plane. The principal component of this
+abstraction is a sequence of prioritized ``Match-Action'' pairs, where
+matches list a set of packet header fields, and actions specify handling
+of the matching packets: transmit via a port, place in a queue, drop, etc.
+
+\section{A Prototype System}
+
+We have developed a prototype OpenFlow-based controller
+for participatory networks called \sys.
+The \sys controller implements a capability system --
+it delegates read and
+write authority, with optional restrictions, from the network's
+administrators to the users, or applications and hosts acting on
+their behalf. The controller is logically centralized, has a global
+view of the network, and implements the principals' high-level
+intents by changing the configuration of the actual network devices.
+In addition, we implement and evaluate the examples described
+above by augmenting four real applications (\xref{sec:Evaluation}).
+
+\sys's user-facing API serves as the next layer on the current SDN stack.
+The abstractions provided by software-defined networks allow us
+to reason formally about \sys's design, and ensure the network
+continues to provide baseline levels of fairness and security, even as principals
+dynamically invoke their capabilities.
+
+Our design addresses the two key challenges of participatory networks:
+how to safely decompose control and visibility of the network, and how to resolve conflicts
+between participants and across requests. 
+\sys's solutions to these challenges were developed both through formal reasoning,
+and by porting real-world applications to solve existing use cases.
+We start with an overview of our solution in \xref{sec:overview},
+followed by more in-depth discussions for each challenge in \xref{sec:delegation}
+and \xref{sec:conflicts} respectively.
+
+
+\vskip 1em
+
+Many approaches to achieving some of these goals have been previously
+proposed including active networking~\cite{ActiveNetworking}, IntServ networking~\cite{rfc1633}, and
+distributed reservation protocols such as RSVP~\cite{rfc2205} and NSIS~\cite{rfc5974}.
+We discuss their relation to participatory networking in \xref{sec:related-work}.
+\sys does not introduce any new
+functionalities into the network. Instead, it exposes existing functionalities and
+provides a single platform for reasoning about their use. We argue that
+this approach provides several advantages: a single target for application
+developers, a unified management framework for network administrators,
+and, most importantly, the ability to reason across all network resources.
+
+\sys is designed for networks within a single administrative domain
+including corporate WANs, datacenters, campus or enterprise
+networks, and home networks. In such networks, there is, logically,
+a single owner from which authority can be delegated.  \sys's design
+does not rely on changes to the end-hosts, such as the use of a
+particular hypervisor, making it suitable for networks with
+user-owned or managed devices.  
+
+\begin{comment}
+
+\vskip 0.5em
+
+In summary, this thesis makes the following contributions:
+
+\begin{enumerate}
+
+%\item {\color{red}We develop a uniform abstraction to enable this ``conversation,'' and design
+%a corresponding API.}
+
+\item We implement a fully-functioning SDN controller which allows a
+network's administrators to safely delegate their authority using our API.
+
+\item We analyze a previously proposed algorithm for consolidating
+hierarchical policies, and propose a new algorithm that reduces the complexity
+from exponential to polynomial.
+
+\item We demonstrate our system's usefulness and
+practicality on a real OpenFlow testbed using 
+microbenchmarks and four real applications enhanced with our API.
+
+
+\end{enumerate}
+
+\end{comment}
+
+\section{Proposed Work}
+
+Participatory networks enable users to directly specify their intentions to
+the network's control-plane. To date, we have shown this interaction
+can occur without compromising the network's security or fairness by
+safely decomposing control and visibility of the network, and resolving 
+conflicts in a principled and intuitive manner
+(Chapters \ref{sec:overview}-\ref{sec:FullSystem}).
+Furthermore, we have shown that such interaction
+can improve user experience (Chapter \ref{sec:Evaluation}).
+In our proposed work (Chapter \ref{sec:proposed}), we plan to reason further \emph{about} these intentions:
+is the network configured to support its users' intentions? if so, how well?
+which intentions can be realized? how will one user's intentions affect another's?
+We hope answers to these questions will give administrators the necessary confidence to
+delegate their network's management through participatory networking.
