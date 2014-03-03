@@ -1,3 +1,5 @@
+% !TEX root = ferguson-dissertation.tex
+
 %\usepackage{geometry}
 
 \usepackage{amsmath}
@@ -5,8 +7,8 @@
 \usepackage{amsfonts}
 
 %%Fonts: enable times if you don't have MinionPro installed
-\usepackage{times}
-%\usepackage{MinionPro} .... % TODO(adf): would be nice if we got this working! breaks microtype package
+%\usepackage{times}
+\usepackage{MinionPro}  % might break microtype package?
 \usepackage{multirow}
 
 
@@ -191,6 +193,8 @@ xleftmargin=10pt,
 %flexiblecolumns=true,
 }
 
+% Default to \flowlog\ language (required by inlining)
+\lstset{language=Flowlog}
 
 % for flowlog
 %\newcommand{\fl}[1]{\lstinline[language=Flowlog]{#1}}

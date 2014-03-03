@@ -1,3 +1,4 @@
+% !TEX root = ferguson-dissertation.tex
 
 \chapter{Exodus}
 
@@ -171,10 +172,10 @@ semantics: A packet from the forbidden subnet will be denied, even if it is
 destined for \ios{10.1.1.3:25}.
 
 \begin{figure}
+  \centering
   \includegraphics[scale=0.95]{figs/orig_network.pdf}
   \caption{Topology for Example Network}
   \label{fig:orig-network}
-  \hrule
 \end{figure}
 
 Line 17 configures NAT for the router. In this case, all outgoing packets will
@@ -496,7 +497,6 @@ hosts again:
   \vspace{0.2cm}
   \caption{Exodus Workflow}
   \label{fig:workflow}
-  \hrule
 \end{figure}
 
 Now we present our core technical contribution. Our goal is the
@@ -679,7 +679,7 @@ same form, using the ``drop'' action for the \ios{deny} rule, and forwarding
 otherwise. As
 Flowlog currently uses negation in place of an explicit ``drop'', the compiler
 embeds \ios{deny} rules as negative conditions; e.g. lines 3-4 of:
-\begin{minipage}{\linewidth}
+%\begin{minipage}{\linewidth}
 \begin{lstlisting}[label=lst:flowlog-filter,language=Flowlog]
 ON tcp_packet(pkt): 
   DO forward(new) WHERE
@@ -688,7 +688,7 @@ ON tcp_packet(pkt):
     AND pkt.nwDst = 10.1.1.3 
     AND pkt.tpDst = 25
 \end{lstlisting}
-\end{minipage}
+%\end{minipage}
 
 \noindent
 As IOS allows an interface to have separate ingress and egress
@@ -823,7 +823,7 @@ tables. These describe, for instance, how to handle new TCP traffic from the
 internal subnet:
 
 \noindent % needed to prevent indentation of entire code block
-\begin{minipage}{\linewidth}
+%\begin{minipage}{\linewidth}
 \begin{lstlisting}[label=lst:flowlog-nat-port-assign,language=Flowlog]
 ON tcp_packet(pkt) WHERE 
   NOT ptassign(0x6, pkt.nwSrc, pkt.tpSrc, 
@@ -842,7 +842,7 @@ ON tcp_packet(pkt) WHERE
     AND new.tpSrc = publicPt
     TIMEOUT 600;
 \end{lstlisting}
-\end{minipage}
+%\end{minipage}
 
 \noindent
 Lines 2-3 dictates that no NAT port has yet been assigned to this
@@ -865,7 +865,8 @@ traffic, etc.\ are similar.
 \label{sec:prototyping}
 
 \begin{figure}
-  \includegraphics[width=0.45\textwidth]{figs/flowlog-network.pdf}
+  \centering
+  \includegraphics[width=0.65\textwidth]{figs/flowlog-network.pdf}
   \caption{Two Exodus routers attached to a shared subnet}
   \label{fig:flowlog-network}
 \end{figure}

@@ -1,3 +1,5 @@
+% !TEX root = ferguson-dissertation.tex
+
 \chapter{Flowlog}
 
 \section{Introduction}
@@ -171,24 +173,24 @@ that support these rules. (Figure~\ref{fig:events} shows the different
 components of \flowlog.)
 
 \begin{figure}
+  \centering
   \includegraphics[scale=0.95]{figs/events-and-db.pdf}
   \caption{\small \flowlog\ system diagram. Events are represented by tuples
   in event tables. Rules interact with the entire database.}
   \label{fig:events}
-  \hrule
 \end{figure}
 
 We have already seen \fl{stolen}, 
 the internal controller state.
 We expose the current time with an
-external table \fl{get_time} (which always contains just one entry):
+external table \fl{get_time} (which always contains just one entry):% \\
 \noindent
-\begin{minipage}{\linewidth}
+%\begin{minipage}{\linewidth}
 \begin{lstlisting}[label=list:2]
 TABLE stolen(switchid); 
 REMOTE TABLE get_time(int); 
 \end{lstlisting}
-\end{minipage}
+%\end{minipage}
 External tables are managed by arbitrary external programs; in our examples,
 we used OCaml programs running on the controller machine. Each table
 declares its type, which is used for error-checking and optimization.
@@ -441,26 +443,20 @@ Figure~\ref{fig:syntax} gives the concrete syntax of \flowlog\ rulesets.
 \begin{figure}[t]
 \footnotesize
 \begin{verbatim}
-block ::= ON <id> ( <id> ) [WHERE rformula] 
-          : rules
+block ::= ON <id> ( <id> ) [WHERE rformula] : rules
 rules ::= rule | rule rules
 rule  ::= do_act | ins_act | del_act
-do_act  ::= DO <id> ( termlist )
-            [WHERE rformula] ;
-ins_act ::= INSERT ( termlist ) 
-            INTO <id> [WHERE rformula] ;
-del_act ::= DELETE ( termlist )
-            FROM <id> [WHERE rformula] ;
+do_act  ::= DO <id> ( termlist ) [WHERE rformula] ;
+ins_act ::= INSERT ( termlist ) INTO <id> [WHERE rformula] ;
+del_act ::= DELETE ( termlist ) FROM <id> [WHERE rformula] ;
 term ::= <num> | <string> | <id> | <id>.<id> | ANY
 termlist ::= term | term , termlist
-rformula ::= <id> ( termlist ) | term = term | 
-             NOT rformula | rformula AND rformula | 
+rformula ::= <id> ( termlist ) | term = term | NOT rformula | rformula AND rformula | 
              rformula OR rformula | ( rformula )   
 \end{verbatim}
 \normalsize
 \caption{\small Syntax of \flowlog\ rulesets. A program is a succession of \fl{ON} blocks. Optional arguments are in square brackets. Capitalized tokens and punctuation are reserved constants.}
 \label{fig:syntax}
-\hrule
 \end{figure}
 
 \paragraph{Declarations}
@@ -1043,10 +1039,10 @@ engine for evaluation. \flowlog\ is implemented in OCaml.
 
 
 \begin{figure}
+  \centering
 \includegraphics[scale=0.95]{figs/eval-cycle.pdf}
 \caption{\small \flowlog's workflow for responding to events. The boxed portion of the diagram appeared as \Cref{fig:events}.}
 \label{fig:workflow}
-\hrule
 \end{figure}
 
 Figure~\ref{fig:workflow} sketches the controller's workflow. When an event
@@ -1401,19 +1397,3 @@ for verifying trace properties.
 Another important analysis, change-impact---which describes the
 \emph{semantic} consequences of a program change---is undecidable for
 general-purpose languages, yet is decidable for \flowlog.
-
-
-\paragraph{Acknowledgments}
-
-We thank the anonymous reviewers for their comments. We are grateful to
-Daniel J.\ Dougherty, Kathi Fisler, Rodrigo Fonseca, Nate Foster, Arjun Guha, 
-Tim Hinrichs, Jonathan Mace, Sanjai Narain and others at Applied
-Communication Sciences, Joshua Reich, and David Walker, for
-discussions and feedback. We are grateful to Jennifer Rexford for several
-enlightening conversations, for shepherding this paper, and for her
-trenchant analysis of drinking styles.
-We thank the Alloy, Frenetic, and XSB teams for excellent software that we
-could build upon. This work is
-partially supported by the NSF. Andrew Ferguson is supported by an NDSEG
-Fellowship. Michael Scheer was supported by a Brown University
-Undergraduate Research Award.
