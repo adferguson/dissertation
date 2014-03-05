@@ -1,8 +1,12 @@
 \chapter{Conclusion}
+\label{sec:conclusion}
+
+\section{Participatory Networking}
+\label{sec:exodus-conclusion}
 
 The design and configuration of today's networks is already informed
 by application needs (\eg,
-networks with full-bichapter bandwidth for MapReduce-type frameworks,
+networks with full-bisection bandwidth for MapReduce-type frameworks,
 or deadline-based queuing~\cite{Ballani:2011} for interactive web services).
 \sys provides a way for the network to solicit and react to such needs
 automatically, dynamically, and at a finer timescale than with human input.
@@ -15,3 +19,24 @@ control, and resolving conflicts between users' needs.
 %controller (eg, load-balancing, Hotel/Campus authentication portals, firewalls
 %and other security applications such as the HoneyNet work, etc.)
 
+\section{Exodus}
+\label{sec:exodus-conclusion}
+
+Exodus is the first SDN migration tool which directly migrates existing network
+policies to equivalent SDN controller software and an OpenFlow-based
+network configuration. Automatic migration allows network operators familiar
+with their own networks, but not SDN, to quickly explore the benefits of this new
+approach.
+By generating code in a high-level, rule-based language, Exodus
+makes it easy to bootstrap a new network controller which can evolve
+at the frenetic pace of enterprise network environments~\cite{kim11evolution}.
+The high-level semantics of the generated program opens the avenue
+for change-impact analysis, and potential refactoring of the physical 
+configuration of the network, bringing the full benefits of an SDN
+deployment.
+No matter the migration strategy eventually employed, Exodus gives
+network administrators a concrete, working prototype from which to begin
+discussion and compare solutions.
+
+\section{Lessons from Building SDN Controllers}
+\label{sec:building-controllers}

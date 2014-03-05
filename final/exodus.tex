@@ -1,8 +1,6 @@
 % !TEX root = ferguson-dissertation.tex
 
-\chapter{Exodus}
-
-\section{Introduction}
+\Chapter{Exodus}{Toward Automatic Migration of Enterprise Network Policies to SDNs}
 \label{sec:introduction}
 
 Managing enterprise networks is notoriously challenging~\cite{
@@ -44,7 +42,7 @@ and 1,500 ACL rules.
 
 Today, there are a few options for incrementally migrating a physical
 network to an SDN~\cite{Casado07Ethane, Casado:hotsdn2012-fabric, levin13panopticonTR}, 
-which we review later in the paper. However, a common deficiency
+which we review later in the dissertation. However, a common deficiency
 of these migration paths is the need to rewrite network policies
 and configurations from scratch, a tall order for busy network operators~\cite{Barrett04fieldstudies}.
 For a risk-averse network administrator,
@@ -66,7 +64,7 @@ this may be reason enough not to migrate.
 %routers, firewalls, and switches. 
 
 %
-This paper directly addresses the problem of migrating distributed network
+This dissertation directly addresses the problem of migrating distributed network
 configurations to equivalent SDN controller programs, and presents Exodus, a
 system for performing this conversion. Exodus consumes configurations written
 in languages such as Cisco IOS and Linux iptables, and generates programs written in Flowlog, a research
@@ -77,7 +75,7 @@ configurations needed to execute these programs.
 %It also provides support to
 %test the resulting configuration in Mininet~\cite{lantz++:hotnets10-mininet}.
 Two of Flowlog's advantages are that it provides rich verification tools (which are not the
-focus of this paper), and enables Exodus to generate code we believe is easy to
+focus of this dissertation), and enables Exodus to generate code we believe is easy to
 later evolve and maintain (\Cref{sec:evaluation}).
 We will discuss the choice of Flowlog in more detail in \Cref{sec:target}. 
 
@@ -111,10 +109,10 @@ logic; we have built a translator for Linux iptables as well, and
 support features similar to those in Juniper Network's JunOS. Because
 the intermediate language is similar enough to Flowlog, we present
 only the latter, which is also the concrete output of Exodus. Also, to
-make the paper more broadly accessible, we present the compiler
+make the dissertation more broadly accessible, we present the compiler
 through examples rather than formal rules.
 
-The rest of this paper proceeds as follows: we start by exploring an
+The rest of this exposition proceeds as follows: we start by exploring an
 input language to our compiler, Cisco IOS, and introduce a running
 example program (\Cref{s:bg:ios}).  Next, we describe our chosen
 target language, Flowlog, and justify our choice
@@ -128,7 +126,8 @@ prototype to cover more features (\Cref{sec:road-ahead}), discuss
 related work (\Cref{sec:relwork}), and conclude.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Background: Cisco IOS}
+\chapter{Language Background}
+\section{Cisco IOS}
 \label{s:bg:ios}
 
 We begin by introducing the source language, IOS. IOS is expressive:
@@ -138,7 +137,7 @@ below. This set of features ensures that our compilation
 task is a non-trivial one. (Later in this section, 
 we discuss configuration languages other than IOS.)
 
-As a running example for the paper, we present a small enterprise's
+As a running example for the exposition, we present a small enterprise's
 configuration, consisting of a pair of networking devices connected as
 shown in \autoref{fig:orig-network}. The figure represents two
 devices, \ios{int} and \ios{ext}, that sandwich a DMZ. The enterprise
@@ -152,7 +151,7 @@ connections with the corporate LAN, as we discuss below.
 
 % Not using Cref here because it isn't recognizing the lst: labels
 Listing~\ref{lst:initial-example-int} shows a small IOS configuration for a single
-device above. (We will use excerpts from this listing throughout this paper.)
+device above. (We will use excerpts from this listing throughout this dissertation.)
 Line 1 defines the name of the router to be \ios{int} (short for
 ``internal''). Lines 3-5 define an interface (or ``port'') called \ios{in\_dmz},
 assign it an IP address and subnet (\ios{10.1.1.1/24}), and indicate
@@ -280,7 +279,7 @@ as a target of all these compilers. Because this intermediate language
 is agnostic to surface syntax, we believe Exodus can also work
 well with other popular (and in some cases, competing) configuration
 languages, such as Juniper's JunOS. Nevertheless, for simplicity, the
-rest of this paper is written in terms of IOS.
+rest of this dissertation is written in terms of IOS.
 
 \paragraph{Exodus Compiler Coverage: Challenges and Scope}
 
@@ -331,7 +330,7 @@ compiler to support additional IOS features until~\Cref{sec:road-ahead}.
 %in \Cref{sec:conclusion}.
 
 
-\section{Compilation Target}
+\section{Choosing a Target Language}
 \label{sec:target}
 
 Since our goal is to translate a collection of IOS policies into an SDN
@@ -407,15 +406,18 @@ language. Nevertheless, Flowlog does provide a stateful,
 proactively-compiled language which therefore serves as an excellent
 target for compilation; therefore, \emph{we can view Flowlog the
   language as merely an API for its proactive compiler}. The ideas of
-this paper apply just as well to other compilation targets, though the
+this dissertation apply just as well to other compilation targets, though the
 engineering decisions are likely to be rather different (e.g., if one
 were generating C++ code that needed to proactively manage OpenFlow
 rules).
 
+\section{Flowlog}
+\label{sec:exodus-flowlog}
+
 \paragraph{Flowlog Example}
 
 Since we will use Flowlog to show the output of compilation in the remainder of the
-paper, we begin with an illustrative example, which we explain line-by-line:
+dissertation, we begin with an illustrative example, which we explain line-by-line:
 
 \begin{lstlisting}[label=lst:flowlog-intro,language=Flowlog]
 TABLE seen(ipaddr);
@@ -488,7 +490,7 @@ hosts again:
 \end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{From IOS to SDN}
+\chapter{From IOS to SDN}
 \label{sec:translating}
 
 \begin{figure}
@@ -524,7 +526,7 @@ software. Finally (\Cref{sec:prototyping}), we discuss
 deploying and running the resulting system using the
 complete Exodus tool suite, which is publicly available on Github.
 
-\subsection{Network Configuration}
+\section{Network Configuration}
 \label{sec:net-conf}
 
 Exodus needs to reflect the semantics of IOS and the requirements for
@@ -585,7 +587,7 @@ ARP Proxy, which allows the router to respond to ARP requests
 for its interfaces and known hosts, and to issue queries on the attached
 subnets.
 
-\subsection{Code Generation}
+\section{Code Generation}
 \label{sec:code-gen}
 
 The heart of Exodus is a compiler that converts IOS into Flowlog that
@@ -634,8 +636,6 @@ ip policy route-map internet
 be applied to traffic on this interface. The \ios{internet} policy
 must be defined in the configuration, as in the following example
 (from \cite{n++:lisa-margrave-firewalls}):
-
-\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[label=lst:policy-route,language=IOS]
 access-list 10 permit 10.232.0.0 0.0.3.255
 
@@ -643,7 +643,6 @@ route-map internet permit 10
 match ip address 10
 set ip next-hop 10.232.0.15
 \end{lstlisting}
-\end{minipage}
 
 \noindent
 Line 1 of the policy defines a set of packets to apply a next-hop
@@ -753,9 +752,6 @@ proper router and interface names.
 For every \ios{evaluate} clause in the original configuration, the compiler asserts a
 corresponding ACL rule in Flowlog. These rules resemble those of \Cref{sec:filtering},
 and also refer to the \fl{reflexiveACL} state table:
-
-\noindent % needed to prevent indentation of entire code block
-\begin{minipage}{\linewidth}
 \begin{lstlisting}[label=lst:flowlog-racl-rule,language=Flowlog]
   aclAlias("ext-out_inet-acl", pkt.locSw, 
     pkt.locPt, new.locPt)  
@@ -766,7 +762,6 @@ and also refer to the \fl{reflexiveACL} state table:
   AND (10.1.1.1 = pkt.nwDst) AND 
   NOT (10.200.200.200 = pkt.nwsrc)
 \end{lstlisting}
-\end{minipage}
 
 \noindent
 This example encodes the \ios{evaluate} rule on line 22 of
@@ -861,7 +856,7 @@ to how the compiler handles reflexive access-lists. While space restrictions pre
 from giving the entire NAT program, the rules produced for return traffic, UDP
 traffic, etc.\ are similar.
 
-\subsection{Prototyping the Network}
+\section{Prototyping the Network}
 \label{sec:prototyping}
 
 \begin{figure}
@@ -896,14 +891,14 @@ launches SSH and web servers on each host to support interactive testing of the
 network's complete ACL, NAT, and routing configuration.
 
 %%%
-\section{Evaluation}
+\chapter{Evaluation of Exodus}
 \label{sec:evaluation}
 
 Exodus is an experimental tool for converting traditional network configurations
 into an equivalent SDN controller program. To evaluate it, we must consider three
 important questions: feasibility, utility, and correctness.
 
-\subsection{Feasibility}
+\section{Feasibility}
 \label{sec:feasibility}
 
 The feasibility of Exodus is a function of both its own methods, and the OpenFlow
@@ -954,7 +949,7 @@ Therefore, until OpenFlow hardware matures -- either with specifically-designed 
 or by making non-TCAM tables available in existing switches -- rate-limiting end-host activities will
 be extremely important in enterprise networks.
 
-\subsection{Utility}
+\section{Utility}
 \label{sec:utility}
 
 We now consider utility: When compiling IOS into an SDN
@@ -1014,7 +1009,7 @@ OpenFlow rules are generated.
 We will discuss several approaches to using Exodus as part of an SDN
 migration in \Cref{sec:physical-tradeoffs}.
 
-\subsection{Compiler Validation}
+\section{Compiler Validation}
 
 While we did the manual checks of correctness in our small configurations, 
 as described in \Cref{sec:feasibility} above, we have left open the question 
@@ -1044,7 +1039,7 @@ as input. We discuss this further in \Cref{sec:relwork}.
 
 
 %%%
-\section{Discussion}
+\chapter{Discussion of SDN Migration}
 \label{sec:tradeoffs}
 
 Automatically translating one language to another starkly highlights differences
@@ -1055,7 +1050,7 @@ In addition, our work with Exodus has provided clarifying examples for some of t
 physical tradeoffs between traditional and software-defined networks.
 We now discuss these two areas.
 
-\subsection{Language Limitations}
+\section{Language Limitations}
 
 Exodus uses a stack of languages (\cf \Cref{sec:translating}) to transform Cisco's IOS into
 an SDN controller, ranging from a specific, year-old research artifact (Flowlog) to
@@ -1063,7 +1058,7 @@ a general-purpose, in-production specification (OpenFlow). As such, we will chie
 issues uncovered in OpenFlow, offer a few lessons for high-level SDN language designers,
 and only briefly touch upon deficiencies exposed in Flowlog.
 
-\paragraph{OpenFlow Shortcomings}
+\subsection{OpenFlow Shortcomings}
 
 Exodus exposed three shortcomings in OpenFlow which we discuss in detail.
 Although Exodus was developed against the OpenFlow 1.0 specification, as it
@@ -1162,7 +1157,7 @@ ICMP type and code fields, for the necessary modifications.
 
 %%%
 
-\paragraph{Lessons for SDN Language Designers}
+\subsection{Lessons for SDN Language Designers}
 
 High-level languages for SDN programming are an important and active
 area of research~\cite{foster:icfp11-frenetic,katta:xldi12-flog,monsanto++:nsdi13-pyretic,ngdfk:hotsdn13-flowlog,Voellmy:2011,voellmy:hotsdn12-procera,Voellmy:2013}. Their goal is to raise the level of abstraction, freeing
@@ -1293,7 +1288,7 @@ are unavailable, we suggest a canonical ordering be used.
 
 
 
-\paragraph{Flowlog Deficiencies} 
+\subsection{Flowlog Deficiencies} 
 
 A few deficiencies in Flowlog's design were also revealed by Exodus.
 Taking a ``default drop'' position, without exposing it as an explicit action, created additional
@@ -1305,7 +1300,7 @@ connections it learned had closed.
 Finally, providing mathematical operations at compile-time, rather than only
 via built-in relations such as \fl{add}, would have made our task more pleasant.
 
-\subsection{Architectural and Physical Tradeoffs}
+\section{Architectural and Physical Tradeoffs}
 \label{sec:physical-tradeoffs}
 
 The output from Exodus is very clearly a hybrid: a centralized SDN controller with explicit
@@ -1550,27 +1545,6 @@ generic OpenFlow rules.
 %only parsers for Onix.
 
 
-
-
-%%%
-\section{Conclusion}
-\label{sec:conclusion}
-
-Exodus is the first SDN migration tool which directly migrates existing network
-policies to equivalent SDN controller software and an OpenFlow-based
-network configuration. Automatic migration allows network operators familiar
-with their own networks, but not SDN, to quickly explore the benefits of this new
-approach.
-By generating code in a high-level, rule-based language, Exodus
-makes it easy to bootstrap a new network controller which can evolve
-at the frenetic pace of enterprise network environments~\cite{kim11evolution}.
-The high-level semantics of the generated program opens the avenue
-for change-impact analysis, and potential refactoring of the physical 
-configuration of the network, bringing the full benefits of an SDN
-deployment.
-No matter the migration strategy eventually employed, Exodus gives
-network administrators a concrete, working prototype from which to begin
-discussion and compare solutions.
 
 %\clearpage
 %\section*{Potential Cut}
