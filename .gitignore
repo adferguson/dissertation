@@ -11,7 +11,8 @@
 *.ilg
 *.ind
 .DS_Store
-proposal.pdf
+ferguson-proposal.pdf
 .*.swp
 ferguson-dissertation.pdf
 *.synctex.gz
+*.brf
