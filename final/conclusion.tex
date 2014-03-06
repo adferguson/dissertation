@@ -38,5 +38,45 @@ No matter the migration strategy eventually employed, Exodus gives
 network administrators a concrete, working prototype from which to begin
 discussion and compare solutions.
 
+\section{Bringing \sys to Flowlog}
+\label{sec:pane-in-flowlog}
+
+What would it take to implement \sys in Flowlog? \sys has a lot of state which we could keep in Flowlog tables. mostly, the improvements would have to be on the Flowlog side: 1) it would have to have a proper composition story, 2) support for topology. Most of \sys's API is exposed with a ``one big switch'' abstraction, which fits with NetCore. however, the implementation details requiring knowing the topology.  Other components of the \sys runtime such as host discovery, topology discovery, etc. could be replaced with a well-built NIB in the current Flowlog.
+
+Some of \sys's decisions require more functionality than is available in Flowlog, so \sys would also be built with an external daemon for doing scheduling, for example.
+
 \section{Lessons from Building SDN Controllers}
 \label{sec:building-controllers}
+
+Useful features of an SDN controller platform:
+\begin{enumerate}
+\item tables (state) -- routing, forwarding, NAT, ARP cache, ACLs, and the NIB
+\item events -- host up, host down, switch up, switch down, etc. plus external events
+\item policy composition -- sequential, parallel, prioritized, and hierarchical merge
+\item path construction -- traffic engineering, tunneling, etc. ... eg, how B4 works, and GMB in PANE.
+\item virtualization -- which is two sub-components:
+	\begin{itemize}
+	\item indirection layer: writing a policy on a virtualized view of the network (eg, one big switch, or a particular slice)
+	\item isolation between tenants (whether overlapping or not)
+	\end{itemize}
+\item scalable implementation -- grow with the number of switches and packets
+\item redundant implementation (multiple controllers)
+\item verification of control programs
+\item debugging functionality (eg, the ability to capture and replay packet histories)
+\item switch resource management
+\item illusion of infinite rule space on the switches  (like virtual memory provides)
+\item consistent updates and transactional updates
+\item a query engine -- infrastructure for performing queries and handling responses at a level the hardware can support
+\item intelligent use of tables -- strategies for optimal placement of rules in the network, and use of heterogenous switch hardware
+\item enforcement of security requirements
+\end{enumerate}
+
+Places where a ``one big switch'' abstraction breaks down:
+\begin{itemize}
+\item managing a hierarchy of caches distributed in a service provider network -- cache placement / routing to caches  is intrinsically connected to network location
+\item managing the latency of flows -- for example, in a clos datacenter network, you'll want to manage the number of switch hops that latency-sensitive traffic takes
+\item circuit provisioning (eg, for ESNet or Geni) with OSCARS ... this is related to WAN traffic engineering in general
+\item draining links or switches for maintenance without affecting traffic [\eg, zUpdate], or testing links to verify correct cabling and full functionality
+\end{itemize}
+
+The bottom line is that the big switch abstraction relies on two assumptions: 1) a uniform network, and 2) topology-independent applications .... if you have a non-uniform network (eg, you have a WAN with different link costs), or if you have topology-dependent applications (cache placement, some apps more latency sensitive than others, maintenance decisions, etc.) then you need the NIB to write your app
