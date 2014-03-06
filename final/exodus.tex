@@ -3,70 +3,7 @@
 \Chapter{Exodus}{Toward Automatic Migration of Enterprise Network Policies to SDNs}
 \label{sec:introduction}
 
-Managing enterprise networks is notoriously challenging~\cite{
-benson09unraveling,Casado07Ethane, casado06sane, kim11evolution,sung11systematic,
-  yu11vpn}. 
-Software-defined networking (SDN) holds the
-promise of making this problem easier by centralizing configuration
-and management, thereby easing the
-evolvability of the network, and enabling the use of novel programming
-languages and verification techniques.
-
-However, migrating from an existing, working network environment to
-an SDN presents a formidable hurdle~\cite{jain++:sigcomm13-google-sdn}.
-Enterprises and administrators are familiar
-with, and quite likely depend upon, the specific behavior of existing
-configurations, and any SDN replacement will need to begin with identical
-behavior.
-
-Unfortunately, these networks can be large 
-and complex~\cite{kim11evolution,levin13panopticonTR,zeng12test}, with network behavior
-defined by myriad policies, 
-%both explicit and implicit, 
-usually specified for each individual device, in a variety of
-languages that configure distributed programs embedded in these
-devices. 
-The scale and complexity of the aggregate
-behavior of these rules means the process of creating a
-controller program for an equivalent SDN is non-trivial.
-For example, Purdue's network was reported to
-have over 15,000 hosts, 200 routers, 1,300 switches, and 182
-VLANs in 2011~\cite{sung11systematic}. 
-%
-Stanford's backbone, whose publicly available configuration we use in
-our evaluation~\cite{zeng12test}, has two
-large border routers connected through 10 switches to 14 Operational Zone
-routers. In aggregate, the configuration comprises 757,000 forwarding entries
-and 1,500 ACL rules. 
-
-
-Today, there are a few options for incrementally migrating a physical
-network to an SDN~\cite{Casado07Ethane, Casado:hotsdn2012-fabric, levin13panopticonTR}, 
-which we review later in the dissertation. However, a common deficiency
-of these migration paths is the need to rewrite network policies
-and configurations from scratch, a tall order for busy network operators~\cite{Barrett04fieldstudies}.
-For a risk-averse network administrator,
-this may be reason enough not to migrate. 
-
-
-%However, few of the world's enterprises are currently using
-%SDNs. Instead, most network behavior is defined by the concurrent
-%execution of distributed programs running on distinct devices; these
-%programs are written in a variety of vendor-specific special-purpose
-%languages. Because enterprises and administrators are familiar
-%with, and quite likely depend upon, the specific behavior of these
-%programs, any SDN replacement will need to begin with identical
-%behavior. Unfortunately, 
-%In~\cite{levin13panopticonTR} the authors
-%evaluate their design on a local campus network comprising 1713 L2 and L3
-%switches. Finally, in~\cite{kim11evolution}, the authors report that the
-%Georgia Tech and Wisconsin campuses comprise respectively 1097 and 1624
-%routers, firewalls, and switches. 
-
-%
-This dissertation directly addresses the problem of migrating distributed network
-configurations to equivalent SDN controller programs, and presents Exodus, a
-system for performing this conversion. Exodus consumes configurations written
+Exodus consumes configurations written
 in languages such as Cisco IOS and Linux iptables, and generates programs written in Flowlog, a research
 language for SDN programming~\cite{ngdfk:hotsdn13-flowlog}.  Flowlog
 provides a compiler and run-time system for controlling OpenFlow switches;

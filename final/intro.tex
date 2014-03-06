@@ -1,12 +1,13 @@
 % !TEX root = ferguson-dissertation.tex
 \chapter{Introduction}
 
-{\bf Thesis Statement} Modern applications can benefit from read and
-write interaction with a network's control-plane, yet such interaction is
-currently unsupported due to security and fairness concerns. We design
-a practical and feasible platform that addresses these challenges,
-and demonstrate its benefits. In addition, we can support a network's
-administrator in the safe and effective use of such a platform.
+{\bf Thesis Statement} Modern applications can benefit from read and write interaction with a
+network's control-plane, yet such interaction is currently unsupported due to
+security and fairness concerns. We design a practical and feasible platform for
+software-defined networks that addresses these challenges through policy
+delegation, and demonstrate its benefits. Furthermore, we can assist
+administrators migrating to these new networks by directly translating their
+existing network configurations to SDN controller software.
 
 \vskip 1em
 
@@ -123,56 +124,73 @@ abstraction is a sequence of prioritized ``Match-Action'' pairs, where
 matches list a set of packet header fields, and actions specify handling
 of the matching packets: transmit via a port, place in a queue, drop, etc.
 
-\section{A Prototype System}
+\section{Migrating to a Software-Defined Network}
 
-We have developed a prototype OpenFlow-based controller
-for participatory networks called \sys.
-The \sys controller implements a capability system --
-it delegates read and
-write authority, with optional restrictions, from the network's
-administrators to the users, or applications and hosts acting on
-their behalf. The controller is logically centralized, has a global
-view of the network, and implements the principals' high-level
-intents by changing the configuration of the actual network devices.
-In addition, we implement and evaluate the examples described
-above by augmenting four real applications (\xref{sec:Evaluation}).
+Managing enterprise networks is notoriously challenging~\cite{
+benson09unraveling,Casado07Ethane, casado06sane, kim11evolution,sung11systematic,
+  yu11vpn}. 
+As just discussed, SDNs hold the
+promise of making this problem easier by centralizing configuration
+and management, thereby easing the
+evolvability of the network, and enabling the use of novel programming
+languages and verification techniques.
 
-\sys's user-facing API serves as the next layer on the current SDN stack.
-The abstractions provided by software-defined networks allow us
-to reason formally about \sys's design, and ensure the network
-continues to provide baseline levels of fairness and security, even as principals
-dynamically invoke their capabilities.
+However, migrating from an existing, working network environment to
+an SDN presents a formidable hurdle~\cite{jain++:sigcomm13-google-sdn}.
+Enterprises and administrators are familiar
+with, and quite likely depend upon, the specific behavior of existing
+configurations, and any SDN replacement will need to begin with identical
+behavior.
 
-Our design addresses the two key challenges of participatory networks:
-how to safely decompose control and visibility of the network, and how to resolve conflicts
-between participants and across requests. 
-\sys's solutions to these challenges were developed both through formal reasoning,
-and by porting real-world applications to solve existing use cases.
-We start with an overview of our solution in \xref{sec:overview},
-followed by more in-depth discussions for each challenge in \xref{sec:delegation}
-and \xref{sec:conflicts} respectively.
+Unfortunately, these networks can be large 
+and complex~\cite{kim11evolution,levin13panopticonTR,zeng12test}, with network behavior
+defined by myriad policies, 
+%both explicit and implicit, 
+usually specified for each individual device, in a variety of
+languages that configure distributed programs embedded in these
+devices. 
+The scale and complexity of the aggregate
+behavior of these rules means the process of creating a
+controller program for an equivalent SDN is non-trivial.
+For example, Purdue's network was reported to
+have over 15,000 hosts, 200 routers, 1,300 switches, and 182
+VLANs in 2011~\cite{sung11systematic}. 
+%
+Stanford's backbone, whose publicly available configuration we use in
+our evaluation~\cite{zeng12test}, has two
+large border routers connected through 10 switches to 14 Operational Zone
+routers. In aggregate, the configuration comprises 757,000 forwarding entries
+and 1,500 ACL rules. 
 
 
-\vskip 1em
+Today, there are a few options for incrementally migrating a physical
+network to an SDN~\cite{Casado07Ethane, Casado:hotsdn2012-fabric, levin13panopticonTR}, 
+which we review later in the dissertation. However, a common deficiency
+of these migration paths is the need to rewrite network policies
+and configurations from scratch, a tall order for busy network operators~\cite{Barrett04fieldstudies}.
+For a risk-averse network administrator,
+this may be reason enough not to migrate. 
 
-Many approaches to achieving some of these goals have been previously
-proposed including active networking~\cite{ActiveNetworking}, IntServ networking~\cite{rfc1633}, and
-distributed reservation protocols such as RSVP~\cite{rfc2205} and NSIS~\cite{rfc5974}.
-We discuss their relation to participatory networking in \xref{sec:related-work}.
-\sys does not introduce any new
-functionalities into the network. Instead, it exposes existing functionalities and
-provides a single platform for reasoning about their use. We argue that
-this approach provides several advantages: a single target for application
-developers, a unified management framework for network administrators,
-and, most importantly, the ability to reason across all network resources.
 
-\sys is designed for networks within a single administrative domain
-including corporate WANs, datacenters, campus or enterprise
-networks, and home networks. In such networks, there is, logically,
-a single owner from which authority can be delegated.  \sys's design
-does not rely on changes to the end-hosts, such as the use of a
-particular hypervisor, making it suitable for networks with
-user-owned or managed devices.  
+%However, few of the world's enterprises are currently using
+%SDNs. Instead, most network behavior is defined by the concurrent
+%execution of distributed programs running on distinct devices; these
+%programs are written in a variety of vendor-specific special-purpose
+%languages. Because enterprises and administrators are familiar
+%with, and quite likely depend upon, the specific behavior of these
+%programs, any SDN replacement will need to begin with identical
+%behavior. Unfortunately, 
+%In~\cite{levin13panopticonTR} the authors
+%evaluate their design on a local campus network comprising 1713 L2 and L3
+%switches. Finally, in~\cite{kim11evolution}, the authors report that the
+%Georgia Tech and Wisconsin campuses comprise respectively 1097 and 1624
+%routers, firewalls, and switches. 
+
+%
+This dissertation directly addresses the problem of migrating distributed network
+configurations to equivalent SDN controller programs, and presents Exodus, a
+system for performing this conversion.
+
 
 \begin{comment}
 
@@ -201,18 +219,18 @@ microbenchmarks and four real applications enhanced with our API.
 
 \end{comment}
 
-\section{Proposed Work}
-
-Participatory networks enable users to directly specify their intentions to
-the network's control-plane. To date, we have shown this interaction
-can occur without compromising the network's security or fairness by
-safely decomposing control and visibility of the network, and resolving 
-conflicts in a principled and intuitive manner
-(Chapters \ref{sec:overview}-\ref{sec:FullSystem}).
-Furthermore, we have shown that such interaction
-can improve user experience (Chapter \ref{sec:Evaluation}).
-In our proposed work (Chapter \ref{sec:proposed}), we plan to reason further \emph{about} these intentions:
-is the network configured to support its users' intentions? if so, how well?
-which intentions can be realized? how will one user's intentions affect another's?
-We hope answers to these questions will give administrators the necessary confidence to
-delegate their network's management through participatory networking.
+%\section{Proposed Work}
+%
+%Participatory networks enable users to directly specify their intentions to
+%the network's control-plane. To date, we have shown this interaction
+%can occur without compromising the network's security or fairness by
+%safely decomposing control and visibility of the network, and resolving 
+%conflicts in a principled and intuitive manner
+%(Chapters \ref{sec:overview}-\ref{sec:FullSystem}).
+%Furthermore, we have shown that such interaction
+%can improve user experience (Chapter \ref{sec:Evaluation}).
+%In our proposed work (Chapter \ref{sec:proposed}), we plan to reason further \emph{about} these intentions:
+%is the network configured to support its users' intentions? if so, how well?
+%which intentions can be realized? how will one user's intentions affect another's?
+%We hope answers to these questions will give administrators the necessary confidence to
+%delegate their network's management through participatory networking.

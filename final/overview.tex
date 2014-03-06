@@ -2,6 +2,57 @@
 \Chapter{Participatory Networking}{An API for Application Control of SDNs}
 \label{sec:overview}
 
+We have developed a prototype OpenFlow-based controller
+for participatory networks called \sys.
+The \sys controller implements a capability system --
+it delegates read and
+write authority, with optional restrictions, from the network's
+administrators to the users, or applications and hosts acting on
+their behalf. The controller is logically centralized, has a global
+view of the network, and implements the principals' high-level
+intents by changing the configuration of the actual network devices.
+In addition, we implement and evaluate the examples described
+above by augmenting four real applications (\xref{sec:Evaluation}).
+
+\sys's user-facing API serves as the next layer on the current SDN stack.
+The abstractions provided by software-defined networks allow us
+to reason formally about \sys's design, and ensure the network
+continues to provide baseline levels of fairness and security, even as principals
+dynamically invoke their capabilities.
+
+Our design addresses the two key challenges of participatory networks:
+how to safely decompose control and visibility of the network, and how to resolve conflicts
+between participants and across requests. 
+\sys's solutions to these challenges were developed both through formal reasoning,
+and by porting real-world applications to solve existing use cases.
+We start with an overview of our solution in this chapter,
+followed by more in-depth discussions for each challenge in \xref{sec:delegation}
+and \xref{sec:conflicts} respectively.
+
+
+\vskip 1em
+
+Many approaches to achieving some of these goals have been previously
+proposed including active networking~\cite{ActiveNetworking}, IntServ networking~\cite{rfc1633}, and
+distributed reservation protocols such as RSVP~\cite{rfc2205} and NSIS~\cite{rfc5974}.
+We discuss their relation to participatory networking in \xref{sec:related-work}.
+\sys does not introduce any new
+functionalities into the network. Instead, it exposes existing functionalities and
+provides a single platform for reasoning about their use. We argue that
+this approach provides several advantages: a single target for application
+developers, a unified management framework for network administrators,
+and, most importantly, the ability to reason across all network resources.
+
+\sys is designed for networks within a single administrative domain
+including corporate WANs, datacenters, campus or enterprise
+networks, and home networks. In such networks, there is, logically,
+a single owner from which authority can be delegated.  \sys's design
+does not rely on changes to the end-hosts, such as the use of a
+particular hypervisor, making it suitable for networks with
+user-owned or managed devices.
+
+\section{The \sys Controller}
+
 We first present an overview of \sys, including the model of
 interaction, the types of messages, and the kinds of network resources
 one can request. We discuss the challenges involved in exposing
@@ -60,7 +111,7 @@ allowing oversubscription.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.3\textwidth]{figs/compilation-pane}
+\includegraphics[width=0.5\textwidth]{figs/compilation-pane}
 \caption{The \sys system and request processing}
 \label{f:system}
 \end{figure}
