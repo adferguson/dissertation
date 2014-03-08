@@ -125,11 +125,11 @@ previous section, all use the network topology to make decisions and may introdu
 on a packet's path through the network.
 \item {\bf Virtualization} -- Virtualizing the network for SDN applications consists of two components:
 	\begin{itemize}
-	\item {\bf Indirection} -- Writing a policy on an abstract view of the network (\eg, ``one big switch'', or a particular slice~\cite{slicing})
+	\item {\bf Indirection} -- Writing a policy on an abstract view of the network (\eg, ``one big switch'', or a particular slice~\cite{gutz:hotsdn12-slices})
 	\item {\bf Isolation} -- Policies written on disparate abstract views of the network should not interfere.
 	\end{itemize}
 \item {\bf Scalability} -- The SDN platform should scale with the network and its demands, through
-federation~\cite{hyperflow}, hierarchy~\cite{kandoo,logical_xbars}, and scalable state storage.
+federation~\cite{Tootoonchian:2010}, hierarchy~\cite{kandoo,logical_xbars}, and scalable state storage.
 \item {\bf Redundancy} -- Redundant, fault-tolerant controllers are a must for any SDN platform in production.
 \item {\bf Verification} -- Verifying control programs, as we do in Flowlog, should help to eliminate
 bugs in these critical infrastructure components.
@@ -137,15 +137,15 @@ bugs in these critical infrastructure components.
 capturing packets, and replaying forwarding decisions~\cite{packet_history, of_replay}.
 \item {\bf Resource management} -- Many network resources, such as per-switch flow tables,
 and per-port rate-limiters, are constrained. SDN control platforms will need to track the use of these
-resources, and are the right place to intelligently optimize their use~\cite{devoflow,difane,nanxi,palette}. Ideally, such platforms
+resources, and are the right place to intelligently optimize their use~\cite{Curtis:2011,Yu:2010,Kang:2013optimizing,Kanizo:2013palette}. Ideally, such platforms
 could offer the illusion of infinite rule space on the switches~\cite{naga-cacheflow}, just as regular applications see
 virtual memory.
 \item {\bf Consistency} -- Many SDN applications require some form of consistency in both the
 data-plane, and the control-plane. Developing and implementing notions of consistency for
-SDN is ongoing~\cite{reitblatt,ratul,of.cpp,sdn-transactions}.
+SDN is ongoing~\cite{reitblatt12consistent,ratul,of.cpp,sdn-transactions}.
 \item {\bf Queries} -- Measuring network state by querying the data-plane is a key component of
-many network applications~\cite{hedera,etc}. SDN control platforms will need intelligence to answer
-queries from multiple applications without overwhelming limited network hardware~\cite{oflops}.
+many network applications~\cite{alfares10hedera,etc}. SDN control platforms will need intelligence to answer
+queries from multiple applications without overwhelming limited network hardware~\cite{Rotsos:2012oflops}.
 \item{\bf Security} -- Finally, like an OS kernel, the underlying SDN platform is responsible for enforcing
 network security guarantees irrespective of the applications in use~\cite{paper_one,paper_two}.
 \end{enumerate}
