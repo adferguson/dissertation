@@ -134,20 +134,20 @@ federation~\cite{Tootoonchian:2010}, hierarchy~\cite{kandoo,logical_xbars}, and 
 \item {\bf Verification} -- Verifying control programs, as we do in Flowlog, should help to eliminate
 bugs in these critical infrastructure components.
 \item {\bf Debugging} -- Useful SDN platforms will provide debugging functionality such as
-capturing packets, and replaying forwarding decisions~\cite{packet_history, of_replay}.
+capturing packets, and replaying forwarding decisions~\cite{packet_history, ofrewind}.
 \item {\bf Resource management} -- Many network resources, such as per-switch flow tables,
 and per-port rate-limiters, are constrained. SDN control platforms will need to track the use of these
 resources, and are the right place to intelligently optimize their use~\cite{Curtis:2011,Yu:2010,Kang:2013optimizing,Kanizo:2013palette}. Ideally, such platforms
-could offer the illusion of infinite rule space on the switches~\cite{naga-cacheflow}, just as regular applications see
+could offer the illusion of infinite rule space on the switches~\cite{cacheflow}, just as regular applications see
 virtual memory.
 \item {\bf Consistency} -- Many SDN applications require some form of consistency in both the
 data-plane, and the control-plane. Developing and implementing notions of consistency for
-SDN is ongoing~\cite{reitblatt12consistent,ratul,of.cpp,sdn-transactions}.
+SDN is ongoing~\cite{reitblatt12consistent,Mahajan2013,of.cpp,sdn-transactions}.
 \item {\bf Queries} -- Measuring network state by querying the data-plane is a key component of
-many network applications~\cite{alfares10hedera,etc}. SDN control platforms will need intelligence to answer
+many network applications~\cite{alfares10hedera,jain++:sigcomm13-google-sdn,elastictree,Benson2011microte}. SDN control platforms will need intelligence to answer
 queries from multiple applications without overwhelming limited network hardware~\cite{Rotsos:2012oflops}.
 \item{\bf Security} -- Finally, like an OS kernel, the underlying SDN platform is responsible for enforcing
-network security guarantees irrespective of the applications in use~\cite{paper_one,paper_two}.
+network security guarantees irrespective of the applications in use~\cite{FRESCO,FortNox}.
 \end{enumerate}
 
 Today, most SDN controllers excel at only a handful of features on the list above, and none -- to our knowledge --
