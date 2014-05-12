@@ -44,7 +44,7 @@ discussion and compare solutions.
 At present, controllers for software-defined networks are in their infancy, and
 most controllers are built to accomplish particular objectives: \sys the challenge of policy
 delegation, and Exodus, the task of policy migration. As we consider the further
-growth and maturation of software-defined networking, we can begin with exercise
+growth and maturation of software-defined networking, we begin with the thought exercise
 of implementing \sys in Flowlog, the language in which Exodus controllers are generated.
 
 Flowlog's initial design was heavily influenced by our experience building \sys.
@@ -55,18 +55,18 @@ and link statuses, timelines of future requests, and more. The central nature of
 and state made \sys a poor match for the existing SDN languages.
 
 Because Flowlog was designed around events and state, implementing \sys in Flowlog
-might appear straight-forward. Several components of the \sys runtime such as host
+might appear straightforward. Several components of the \sys runtime such as host
 discovery, topology discovery, spanning-tree construction, and forwarding decisions,
 could be replaced with well-built NIB and forwarding programs in the current Flowlog.
-Furthermore, much of the \sys API is exposed to it's users assuming a ``one big switch''
+Furthermore, much of the \sys API is exposed to its users assuming a ``one big switch''
 abstraction of the network, which aligns with that of the NetCore policies Flowlog generates.
 
 However, we find that Flowlog currently falls short in two key areas: composition, and routing.
 In Flowlog's present design, all event handlers are triggered at once -- it is not possible to
 first evaluate an incoming packet with, for example, an access-control module (or \sys), and
 then second with a forwarding module. While the physical composition employed by Exodus
-is immune to this problem, \sys requires logical composition as its policies will not necessarily
-yield a complete end-to-end routing assignment for all packets.
+circumvents this problem, \sys requires logical composition as its policies will not necessarily
+yield end-to-end routes for all packets.
 
 Indeed, this example is directly related to Flowlog's second key shortcoming: \sys policies may
 simply declare that some packets should be waypointed through a particular switch before
@@ -110,7 +110,7 @@ programming abstraction.
 
 Noticing that SDN controllers should provide abstractions for path programming as well as
 for taking a ``one big switch'' view is not the only lesson we can draw from the development
-of \sys and Exodus. Upon reflection, the following list of 13 features useful in almost every
+of \sys and Exodus. Upon reflection, the following list of thirteen features useful in almost every
 SDN controller emerges:
 
 \begin{enumerate}

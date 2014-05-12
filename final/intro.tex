@@ -124,15 +124,14 @@ abstraction is a sequence of prioritized ``Match-Action'' pairs, where
 matches list a set of packet header fields, and actions specify handling
 of the matching packets: transmit via a port, place in a queue, drop, etc.
 
-\section{Migrating to a Software-Defined Network}
+\section{Migrating to Software-Defined Networks}
 
-Managing enterprise networks is notoriously challenging~\cite{
+Software-defined networks also offer to simply the management
+of enterprise networks, a notoriously challenging problem~\cite{
 benson09unraveling,Casado07Ethane, casado06sane, kim11evolution,sung11systematic,
   yu11vpn}. 
-As just discussed, SDNs hold the
-promise of making this problem easier by centralizing configuration
-and management, thereby easing the
-evolvability of the network, and enabling the use of novel programming
+SDNs ease the evolvability of the network by centralizing configuration
+and management, and enable the use of modern programming
 languages and verification techniques.
 
 However, migrating from an existing, working network environment to
@@ -157,7 +156,7 @@ have over 15,000 hosts, 200 routers, 1,300 switches, and 182
 VLANs in 2011~\cite{sung11systematic}. 
 %
 Stanford's backbone, whose publicly available configuration we use in
-our evaluation~\cite{zeng12test}, has two
+our evaluation (\Cref{sec:evaluation})~\cite{zeng12test}, has two
 large border routers connected through 10 switches to 14 Operational Zone
 routers. In aggregate, the configuration comprises 757,000 forwarding entries
 and 1,500 ACL rules. 
@@ -189,8 +188,15 @@ this may be reason enough not to migrate.
 %
 This dissertation directly addresses the problem of migrating distributed network
 configurations to equivalent SDN controller programs, and presents Exodus, a
-system for performing this conversion.
+system we developed for performing this conversion.
+The controllers Exodus generates are written in Flowlog~\cite{Nelson:2014flowlog},
+a language for SDN programming we designed out of our experience building
+the PANE controller.
 
+The development of PANE, Flowlog, and Exodus has exposed a number of
+deficiencies in the current state of SDN development.
+We close with a discussion of these deficiencies relative to traditional networking
+(\Cref{sec:tradeoffs}), and within the modern software-stack itself (\Cref{sec:conclusion}).
 
 \begin{comment}
 

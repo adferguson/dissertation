@@ -5,7 +5,7 @@
 
 Exodus consumes configurations written
 in languages such as Cisco IOS and Linux iptables, and generates programs written in Flowlog, a research
-language for SDN programming~\cite{ngdfk:hotsdn13-flowlog}.  Flowlog
+language for SDN programming~\cite{Nelson:2014flowlog}.  Flowlog
 provides a compiler and run-time system for controlling OpenFlow switches;
 atop this, Exodus generates both the controller software and the switch
 configurations needed to execute these programs.  
@@ -272,10 +272,10 @@ compiler to support additional IOS features until~\Cref{sec:road-ahead}.
 
 Since our goal is to translate a collection of IOS policies into an SDN
 controller program, we must select a target controller platform. There
-are many options: C++ code for the NOX platform~\cite{gude:ccr08-nox},
+are many options: C++ code for the NOX platform~\cite{Gude:2008},
 Python code for POX~\cite{pox}, or Java atop Floodlight~\cite{floodlight}. There are also
 numerous research languages
-available~\cite{foster:icfp11-frenetic,katta:xldi12-flog,monsanto++:nsdi13-pyretic,ngdfk:hotsdn13-flowlog,Voellmy:2011,voellmy:hotsdn12-procera,Voellmy:2013}.
+available~\cite{foster:icfp11-frenetic,katta:xldi12-flog,monsanto++:nsdi13-pyretic,Nelson:2014flowlog,Voellmy:2011,voellmy:hotsdn12-procera,Voellmy:2013}.
 Our final choice was motivated by the
 following needs:
 \begin{description}
@@ -288,13 +288,13 @@ following needs:
   ``write-only''. Instead, we must target a meaningfully high-level
   language, and produce relatively readable output in that
   language. This requirement makes the highly expressive research
-  languages~\cite{foster:icfp11-frenetic,katta:xldi12-flog,koponen++:nsdi14-vmware-nlog,ngdfk:hotsdn13-flowlog,Voellmy:2013} an attractive choice.
+  languages~\cite{foster:icfp11-frenetic,katta:xldi12-flog,koponen++:nsdi14-vmware-nlog,Nelson:2014flowlog,Voellmy:2013} an attractive choice.
 
   One advantage to producing high-level code is that it can also then
   be subjected to program analysis and verification activities, which
   will better support evolution of the controller software. There is a
   wide and growing range of such tools, though the most powerful,
-  \emph{sound} tools seem to be built for research languages~\cite{guha:sdnverif,ngdfk:hotsdn13-flowlog}.
+  \emph{sound} tools seem to be built for research languages~\cite{guha:sdnverif,Nelson:2014flowlog}.
 
 \item[Support for Controller State] As we have already seen, policies
   refer extensively to state.  The resulting controller programs must
@@ -306,9 +306,9 @@ following needs:
   While platforms like NOX obviously support these, some research
   languages do not~\cite{monsanto:popl12-netcore,monsanto++:nsdi13-pyretic,Voellmy:2013}. This requirement also bars us from using
   the simplest of targets -- OpenFlow switch rules -- as they are
-  stateless and cannot themselves implement these dynamic policies~\cite{McKeown:ccr08-openflow}.
+  stateless and cannot themselves implement these dynamic policies~\cite{McKeown:2008}.
   High-level languages with built-in state include Maple's algorithmic
-  policies~\cite{Voellmy:2013}, and the rule-based languages Nlog~\cite{koponen++:nsdi14-vmware-nlog}, Flog~\cite{katta:xldi12-flog} and Flowlog~\cite{ngdfk:hotsdn13-flowlog}.
+  policies~\cite{Voellmy:2013}, and the rule-based languages Nlog~\cite{koponen++:nsdi14-vmware-nlog}, Flog~\cite{katta:xldi12-flog} and Flowlog~\cite{Nelson:2014flowlog}.
 
 \item[Support for Proactive Compilation] Recent
   research has shown how to proactively
@@ -317,7 +317,7 @@ following needs:
   for our compiled SDN programs to micro-manage flow-table updates on
   switches, and allows us to focus on the core goals of this
   project. %More recently, Flowlog has shown how to extend proactive
-  %compilation to programs with internal state~\cite{ngdfk:hotsdn13-flowlog}.
+  %compilation to programs with internal state~\cite{Nelson:2014flowlog}.
 
 \item[Availability as Open Source] Finally, as developing our IOS
   compiler required us to extend the target language in numerous ways
@@ -806,7 +806,7 @@ traffic, etc.\ are similar.
 Exodus produces more than just a Flowlog program: it also produces a
 description of the network on which it runs, including the switches, their
 wiring, and configuration, which allows us to have a running prototype of the
-network in an emulation environment such as Mininet~\cite{lantz++:hotnets10-mininet}. The specification can also
+network in an emulation environment such as Mininet~\cite{Mininet}. The specification can also
 serve as a blueprint for a physical network that implements the same policies
 as the original network.
 
@@ -1097,7 +1097,7 @@ ICMP type and code fields, for the necessary modifications.
 \subsection{Lessons for SDN Language Designers}
 
 High-level languages for SDN programming are an important and active
-area of research~\cite{foster:icfp11-frenetic,katta:xldi12-flog,monsanto++:nsdi13-pyretic,ngdfk:hotsdn13-flowlog,Voellmy:2011,voellmy:hotsdn12-procera,Voellmy:2013}. Their goal is to raise the level of abstraction, freeing
+area of research~\cite{foster:icfp11-frenetic,katta:xldi12-flog,monsanto++:nsdi13-pyretic,Nelson:2014flowlog,Voellmy:2011,voellmy:hotsdn12-procera,Voellmy:2013}. Their goal is to raise the level of abstraction, freeing
 programmers from mundane details of flow table programming and switch
 implementations, and to make SDN programs more reusable and analyzable.
 Abstraction design is an iterative process, and our work with Exodus has
@@ -1369,14 +1369,14 @@ support is still missing in high-level SDN languages.
 \label{sec:relwork}
 
 Migrating enterprise networks to networks with centralized control is
-an important topic in the SDN literature. While early proposals, such as 4D~\cite{greenberg:ccr05-4d}
+an important topic in the SDN literature. While early proposals, such as 4D~\cite{Greenberg:2005}
  or SANE~\cite{casado06sane}, were understandably ``clean-slate'' designs, with no
 upgrade path other than starting from scratch, a subsequent strategy was safe co-existence.
 Ethane~\cite{Casado07Ethane} required no host modifications, and allowed its switches to
 be incrementally deployed alongside regular switches.
 OpenFlow, from the start, introduced hybrid switches that could operate both with Layer-2/3 control
 protocols or be managed by a controller, and had the requirement that OF switches would keep 
-OpenFlow traffic isolated from production traffic~\cite{McKeown:ccr08-openflow}.
+OpenFlow traffic isolated from production traffic~\cite{McKeown:2008}.
 Even in the case of incremental upgrades, these strategies are ``dual-stack'', meaning that
 the SDN and the traditional network are independent.
 
@@ -1452,7 +1452,7 @@ subnets. All these works, however, focus on translation for the
 purpose of analysis, not to generate code for execution.
 
 As described in \Cref{sec:translating}, Exodus produces
-Flowlog~\cite{ngdfk:hotsdn13-flowlog} programs which compile to
+Flowlog~\cite{Nelson:2014flowlog} programs which compile to
 NetCore, and then OpenFlow.
 Implementing the features described in this work required making
 several enhancements to Flowlog and NetCore.
@@ -1502,7 +1502,7 @@ generic OpenFlow rules.
 %NetCore~\cite{monsanto:popl12-netcore} runtime, which Flowlog is built atop.
 %
 %\tightparagraph{Packet Types}
-%The Flowlog~\cite{ngdfk:hotsdn13-flowlog} language did not originally support
+%The Flowlog~\cite{Nelson:2014flowlog} language did not originally support
 %a notion of \emph{subtype} for packets. An ARP packet exposed the same fields
 %as a TCP packet, including useless fields like destination-port (\fl{tpDst})
 %and without any access to the ARP payload fields. In order to properly
