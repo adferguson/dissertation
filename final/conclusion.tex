@@ -1,8 +1,10 @@
+% !TEX root = ferguson-dissertation.tex
+
 \chapter{Conclusion}
 \label{sec:conclusion}
 
 This dissertation has presented prototypes of two novel contributions to
-software-defined networking. The first, \sys, allows network administrator's
+software-defined networking. The first, \sys, allows network administrators
 to safely delegate their authority over the network's policy.
 The design and configuration of today's networks is already informed
 by application needs (\eg,
@@ -42,7 +44,7 @@ discussion and compare solutions.
 \label{sec:pane-in-flowlog}
 
 At present, controllers for software-defined networks are in their infancy, and
-most controllers are built to accomplish particular objectives: \sys the challenge of policy
+most controllers are built to accomplish particular objectives: \sys, the challenge of policy
 delegation, and Exodus, the task of policy migration. As we consider the further
 growth and maturation of software-defined networking, we begin with the thought exercise
 of implementing \sys in Flowlog, the language in which Exodus controllers are generated.
@@ -68,7 +70,7 @@ then second with a forwarding module. While the physical composition employed by
 circumvents this problem, \sys requires logical composition as its policies will not necessarily
 yield end-to-end routes for all packets.
 
-Indeed, this example is directly related to Flowlog's second key shortcoming: \sys policies may
+Indeed, this example is directly related to Flowlog's second key shortcoming -- lack of abstractions for routing -- as \sys policies may, for example,
 simply declare that some packets should be waypointed through a particular switch before
 reaching their destination. Such a policy, like any which introduces topological constraints,
 would be challenging to implement in Flowlog, which only provides either a hop-by-hop or
@@ -81,20 +83,20 @@ a ``one big switch'' approach to network programming.
 view of the network. Other examples include:
 
 \begin{itemize}
-\item {\bf Guaranteed latency} -- The end-to-end latency a flow experiences is a function of
-many variables, including the choice of path. An SDN application designed to manage flow
+\item {\bf Guaranteeing latency} -- A flow's end-to-end latency is a function of
+many variables, including the choice of path. As such, an SDN application designed to manage flow
 latencies will require details of the network topology. For example, in a Clos datacenter network,
 latency is a function of the number of switches (and therefore links) a packet traverses.
 
-\item {\bf Circuit provisioning} -- Many scientific WANs are designed to provision optical circuits
+\item {\bf Provisioning circuits} -- Many scientific WANs are designed to provision optical circuits
 on demand, either for bulk data dissemination (\eg, in ESNet) or to isolate experimental traffic
 (\eg, in GENI). Such applications are a particular form of wide-area traffic engineering, and
 obviously break the ``one big switch'' abstraction.
 
-\item {\bf Scheduled maintenance} -- A controller application designed to seamlessly migrate
+\item {\bf Scheduling maintenance} -- A controller application designed to seamlessly migrate
 traffic ahead of scheduled maintenance necessarily requires information about the network's
 physical infrastructure (\eg, the bandwidth available on each link, which links will be taken
-offline by switch maintenance, which links share the same optical cable, etc.)
+offline by switch maintenance, which links share the same optical cable, etc.).
 \end{itemize}
 
 From these examples, we see that the ``one big switch'' abstraction works best under two
@@ -102,19 +104,19 @@ assumptions: first, that the network is uniform, and second, that applications a
 When networks are not uniform (for example, a WAN with many different link costs,
 or a network with middleboxes along particular paths), or control applications
 make topology-dependent decisions (for example, to manage latency, or schedule maintenance) then
-the controller must expose topology information through a NIB, and should provide a path
-programming abstraction.
+the controller must expose topology information through a NIB, and should provide abstractions for path
+programming and routing.
 
 \section{Lessons from Building SDN Controllers}
 \label{sec:building-controllers}
 
-Noticing that SDN controllers should provide abstractions for path programming as well as
+Realizing that SDN controllers should provide abstractions for path programming as well as
 for taking a ``one big switch'' view is not the only lesson we can draw from the development
 of \sys and Exodus. Upon reflection, the following list of thirteen features useful in almost every
 SDN controller emerges:
 
 \begin{enumerate}
-\item {\bf Tables (state)} -- Every network contains many tables, used for routing, forwarding,
+\item {\bf Tables (state)} -- Every network implementation contains many tables, which may be used for routing, forwarding,
 address translation, ARP caching, link-state, access control, and more.
 \item {\bf Events} -- Networks are very dynamic, and control applications must respond to many
 types of events including switch or link up, switch or link down, host discovery, and external events.
@@ -126,7 +128,7 @@ on a packet's path through the network.
 \item {\bf Virtualization} -- Virtualizing the network for SDN applications consists of two components:
 	\begin{itemize}
 	\item {\bf Indirection} -- Writing a policy on an abstract view of the network (\eg, ``one big switch'', or a particular slice~\cite{gutz:hotsdn12-slices})
-	\item {\bf Isolation} -- Policies written on disparate abstract views of the network should not interfere.
+	\item {\bf Isolation} -- Policies written on disparate abstract views of the network should not interfere~\cite{Sherwood:2010}.
 	\end{itemize}
 \item {\bf Scalability} -- The SDN platform should scale with the network and its demands, through
 federation~\cite{Tootoonchian:2010}, hierarchy~\cite{kandoo,logical_xbars}, and scalable state storage.
@@ -141,7 +143,7 @@ resources, and are the right place to intelligently optimize their use~\cite{Cur
 could offer the illusion of infinite rule space on the switches~\cite{cacheflow}, just as regular applications see
 virtual memory.
 \item {\bf Consistency} -- Many SDN applications require some form of consistency in both the
-data-plane, and the control-plane. Developing and implementing notions of consistency for
+data-plane and the control-plane. Developing and implementing notions of consistency for
 SDN is ongoing~\cite{reitblatt12consistent,Mahajan2013,of.cpp,sdn-transactions}.
 \item {\bf Queries} -- Measuring network state by querying the data-plane is a key component of
 many network applications~\cite{alfares10hedera,jain++:sigcomm13-google-sdn,elastictree,Benson2011microte}. SDN control platforms will need intelligence to answer
