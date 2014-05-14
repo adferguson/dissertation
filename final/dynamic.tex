@@ -39,8 +39,8 @@ consolidated actions from all policies in the tree.\footnote{This
   semantic model, where the central controller conceptually sees all
   packets, is inspired by Frenetic~\cite{Foster:2010}.}
 Because OpenFlow switches cannot directly implement these trees,
-we linearize Policy Trees to \emph{network flow tables} (\xref{sec:compilation}), which
-\sys's runtime uses to configure switches (\xref{sec:FullSystem}).
+we linearize Policy Trees to \emph{network flow tables} (\Cref{sec:compilation}), which
+\sys's runtime uses to configure switches (\Cref{sec:FullSystem}).
 %{\color{red} We conclude with a theorem that this translation is correct.} % where did we put it?
 
 
@@ -99,10 +99,10 @@ against Policy Trees and returns an action.
 For our purposes, packets are 
 a vector of header names and values; we do not match on packets'
 contents. {\color{red} For concreteness, we depict the actions we have implemented in 
-our prototype (\xref{sec:compilation}): admission control, guaranteed
+our prototype (\Cref{sec:compilation}): admission control, guaranteed
 minimum bandwidth (GMB), and $\textbf{0}$, a special ``don't care''
 action. In
-\xref{sec:future}, we outline how to support additional ones such as
+\Cref{sec:future}, we outline how to support additional ones such as
 rate-limiting and waypointing.}
 
 A Policy Tree is a tree of policy nodes ($D$), which contain sets of policy
@@ -183,7 +183,7 @@ linear matching semantics. Second, \sys's runtime uses
 network flow tables to configure a distributed network of switches,
 translating high-level actions such as $\textbf{GMB}(n)$ to low-level
 operations on switches. We defer discussion of \sys's runtime until
-\xref{sec:FullSystem}.
+\Cref{sec:FullSystem}.
 
 \begin{figure}[t]
 
@@ -435,7 +435,7 @@ simple to express intuitive conflict resolutions such as ``child overrides
 parent.''
 Therefore, the choice of conflict-resolution operators is a key policy decision.
 
-As we discuss in \xref{sec:compilation}, \sys's design allows for complex
+As we discuss in \Cref{sec:compilation}, \sys's design allows for complex
 conflict-resolution operators, and could support different operators at
 each node in the Policy Tree. However, our current implementation does
 not support this degree of complexity; we chose simple operators in the

@@ -33,11 +33,11 @@ a DHCP vendor-specific or site-specific option.}
 In the following chapters, we examine two aspects of our prototype.
 First, we consider four case studies of real applications
 that use the \sys API to improve end-user experience
-(\xref{sec:ApplicationUsage}).  Second, we evaluate the practicality
+(\Cref{sec:ApplicationUsage}).  Second, we evaluate the practicality
 of implementing the \sys API in current OpenFlow-enabled networks,
 considering questions such as the latency of processing requests,
 and the number of rules created by networked applications
-(\xref{sec:Microbenchmarks}).
+(\Cref{sec:Microbenchmarks}).
 
 \section{Application Usage}
 \label{sec:ApplicationUsage}
@@ -74,7 +74,7 @@ hosts show that making reservations with \sys for VoIP applications
 is quite feasible. Skype calls peaked at 75 per hour, with 80\% of
 calls lasting for fewer than 30 minutes~\cite{SkypeTraffic}.  This
 frequency is well within current OpenFlow switches' capabilities, as
-we measure in \xref{sec:Microbenchmarks}.\\
+we measure in \Cref{sec:Microbenchmarks}.\\
 
 \subsection{SSHGuard}
 \label{sec:sshguard}
@@ -99,7 +99,7 @@ SSHGuard will block Eve's traffic for the next five minutes using
 \sys's \priv{Deny} request. The \sys controller then places an
 OpenFlow rule to drop packets to Alice's host coming from Eve's at a
 switch close to Eve's host.
-%, following the procedure in \xref{sec:NIB}.
+%, following the procedure in \Cref{sec:NIB}.
 
 Although this is a basic example, it illustrates \sys's ability to
 expose in-network functionality (namely, dropping packets) to
@@ -362,7 +362,7 @@ be admitted.
 TVA is a network architecture in which end-hosts authorize the receipt
 of packet flows via capabilities in order to prevent DoS-attacks~\cite{Yang:2005}.
 %\treelang also supports this goal, but by allowing end-hosts to safely
-%manage network policies for themselves, as we show in \xref{sec:ApplicationUsage}.
+%manage network policies for themselves, as we show in \Cref{sec:ApplicationUsage}.
 By contrast, \sys allows administrators to delegate the
 privilege to install restricted network-wide firewall rules, and
 users can do so either proactively or reactively (\cf
@@ -555,7 +555,7 @@ FML also allows policies to be prioritized in a linear sequence (a
 policies, in addition to more general hierarchies.  
 %For example, \sys
 %uses an inverted ``child overrides parent'' conflict-resolution scheme
-%(\xref{sec:conflict-resolution-operators}) by default, and the author of an individual
+%(\Cref{sec:conflict-resolution-operators}) by default, and the author of an individual
 %policy node can adopt a more restrictive ``parent overrides child''
 %scheme. FML does not support both ``child overrides parent'' and
 %``parent overrides child'' schemes simultaneously.

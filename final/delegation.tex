@@ -32,7 +32,7 @@ A \emph{request} affects the state of the network for some interval of time.
 %has the necessary privileges in the share tree. Second, it checks if
 %the request can co-exist with previously accepted requests by checking
 %the policy tree for the start and end times, as we will describe in
-%\xref{sec:PolicyTrees}. }
+%\Cref{sec:PolicyTrees}. }
 %
 By default, requests take effect immediately and do not expire;
 specific start and end times may optionally be provided.  Verifying if
@@ -66,7 +66,7 @@ makes use of the share tree's hierarchy to resolve conflicts -- for
 example, an access control request made on a child share overrides
 those in parent shares.  We defer further discussion of \sys's general
 approach to conflict resolution until
-\xref{sec:conflicts}.
+\Cref{sec:conflicts}.
 
 With each request, the principal can specify a fulfillment mode, either
 \emph{strict} or \emph{partial}. These are provided for atomicity and
@@ -86,7 +86,7 @@ These modes exist for two reasons: first, to avoid race conditions in
 request allocations, and second, to avoid complicated, fine-grained
 specifications that depend on \sys's current state. We defer a more
 complete discussion of the strict and partial fulfillment modes until
-\xref{sec:strict-partial}.
+\Cref{sec:strict-partial}.
 
 \begin{figure}[t]
 \centering
@@ -109,7 +109,7 @@ last indefinitely. A simple reservation with maximum
 bandwidth $B$ is a special case with $F = M = B; C = m = 0$. GMB
 reservations are ultimately implemented by \sys's runtime as a
 sequence of forwarding actions and switch queues, as we describe in
-\xref{sec:FullSystem}. Requests which cannot be implemented are
+\Cref{sec:FullSystem}. Requests which cannot be implemented are
 rejected.
 
 Figure~\ref{fig:sched} shows a simple example in which a principal
@@ -138,7 +138,7 @@ only contain subsets of their parents' sets.
 \sys implements \priv{Waypoint} and \priv{Avoid} by installing flow-specific
 forwarding rules along a path determined by
 fixing or deleting nodes as appropriate when routing over the network graph
-(\xref{sec:NIB}). Requests to create unrealizable paths are rejected.
+(\Cref{sec:NIB}). Requests to create unrealizable paths are rejected.
 
 \tightparagraph{Rate-limits}
 \sys supports rate-limit requests which result in matching traffic 
@@ -147,7 +147,7 @@ ports with established rate-limiters, as available in current switches.
 While basic, such requests can be used to mitigate DOS attacks or
 enforce traffic contracts between tenants in a shared datacenter.
 \sys's global view of the network enables it to make best use of the switches'
-features and place rate-limiters close to the traffic's source, as we describe in \xref{sec:NIB}.
+features and place rate-limiters close to the traffic's source, as we describe in \Cref{sec:NIB}.
 Like \sys's bandwidth reservations, rate-limits are currently restricted to circuits;
 a network with distributed rate-limiters, such as those proposed
 by Raghavan, \etal~\cite{Raghavan:2007}, could support more general limits.
@@ -238,7 +238,7 @@ Finally, in the absence of transactional-style requests (\eg, a
 request for ``resource A \emph{or} resource B''), \sys's hints are a
 more flexible way to provide information to the network than via
 requests. In this use, hints share a similar role to \sys's partial
-fulfillment mode for requests (\xref{sec:strict-partial}).
+fulfillment mode for requests (\Cref{sec:strict-partial}).
 
 \begin{comment}
 Hints are not promises, and can always be ignored by the \sys controller. The 
@@ -310,7 +310,7 @@ and query the state of the network. For example, the principal
 between the Skype call's source and destination, and the principal
 \paneprin{Hadoop}{10.20.20.20}{Bob} may request guaranteed bandwidth
 between the three machines in an HDFS write pipeline, as we implement
-in \xref{sec:ApplicationUsage}.
+in \Cref{sec:ApplicationUsage}.
 
 In a deployed system, \sys could use 802.1x to authenticate the user
 portion of a principal against an existing user database such as

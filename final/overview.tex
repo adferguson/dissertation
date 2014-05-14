@@ -12,7 +12,7 @@ their behalf. The controller is logically centralized, has a global
 view of the network, and implements the principals' high-level
 intents by changing the configuration of the actual network devices.
 In addition, we implement and evaluate the examples described
-above by augmenting four real applications (\xref{sec:Evaluation}).
+above by augmenting four real applications (\Cref{sec:Evaluation}).
 
 \sys's user-facing API serves as the next layer on the current SDN stack.
 The abstractions provided by software-defined networks allow us
@@ -26,8 +26,8 @@ between participants and across requests.
 \sys's solutions to these challenges were developed both through formal reasoning,
 and by porting real-world applications to solve existing use cases.
 We start with an overview of our solution in this chapter,
-followed by more in-depth discussions for each challenge in \xref{sec:delegation}
-and \xref{sec:conflicts} respectively.
+followed by more in-depth discussions for each challenge in \Cref{sec:delegation}
+and \Cref{sec:conflicts} respectively.
 
 
 \vskip 1em
@@ -35,7 +35,7 @@ and \xref{sec:conflicts} respectively.
 Many approaches to achieving some of these goals have been previously
 proposed including active networking~\cite{ActiveNetworking}, IntServ networking~\cite{rfc1633}, and
 distributed reservation protocols such as RSVP~\cite{rfc2205} and NSIS~\cite{rfc5974}.
-We discuss their relation to participatory networking in \xref{sec:related-work}.
+We discuss their relation to participatory networking in \Cref{sec:related-work}.
 \sys does not introduce any new
 functionalities into the network. Instead, it exposes existing functionalities and
 provides a single platform for reasoning about their use. We argue that
@@ -73,8 +73,8 @@ After authentication, principals interact with the \sys
 controller using a simple text-based protocol.
 
 Principals can issue three types of messages to read and write network
-state: \emph{requests} (\xref{sec:Requests}), \emph{queries}
-(\xref{sec:Queries}), and \emph{hints} (\xref{sec:Hints}).  Requests
+state: \emph{requests} (\Cref{sec:Requests}), \emph{queries}
+(\Cref{sec:Queries}), and \emph{hints} (\Cref{sec:Hints}).  Requests
 are for resources (\eg, bandwidth or access control), with an action
 to be taken by the controller. Queries read some component of network
 state (\eg, traffic between hosts, or available bandwidth). Hints
@@ -177,7 +177,7 @@ atoms are arranged in the same hierarchy as the share tree, forming a
 \emph{policy tree}.  A policy tree is a declarative data structure
 that represents the desired global policy for the network. \sys
 materializes this policy in the network by installing rules in the
-switches that implement an equivalent policy (\xref{sec:FullSystem}).
+switches that implement an equivalent policy (\Cref{sec:FullSystem}).
 
 Policy atoms thus exist in the context of a share, and are bound by the
 shares' privileges and flowgroup. However, policy atoms may
@@ -196,7 +196,7 @@ suitable for OpenFlow switches.  In particular, HFTs use
 \emph{conflict resolution operators} within and between each node in
 the hierarchy to flexibly resolve conflicts. We describe the design
 of \sys's operators, and the semantics and implementation of HFTs in
-\xref{sec:conflicts}.
+\Cref{sec:conflicts}.
 
 \vskip 1em
 
@@ -219,7 +219,7 @@ tree, augmented with the request itself.  If this check passes, the
 request is incorporated into the tree, and the controller can install
 the policy onto the network.
 This process also has a variation which only partially fulfills requests;
-\xref{sec:strict-partial} describes both variations in more detail.
+\Cref{sec:strict-partial} describes both variations in more detail.
 
 A final key feature, which we detail in subsequent chapters,
 is that \sys allows principals to request resources for future intervals.

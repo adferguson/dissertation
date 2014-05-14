@@ -11,7 +11,7 @@ through the introduction of Hierarchical Flow Tables (HFTs).
 
 Two requests overlap when the intersection of their
 respective flowgroups is not empty, \ie, there are some flows that
-match both.  As described in \xref{sec:overview}, principals
+match both.  As described in \Cref{sec:overview}, principals
 make requests in the context of a share, and accepted requests
 become policy atoms residing in this share. Policy atoms, then,
 inherit from the share tree a natural hierarchical relationship,
@@ -19,11 +19,11 @@ which we call the \emph{policy tree}. The network's effective policy is a functi
 of the set of all policy atoms, their position in the tree, and the
 semantics of conflict resolution between overlapping policy atoms.
 
-We now develop a detailed semantics for HFTs (\xref{sec:Implementation}),
-describe a compiler which translates HFTs for use in OpenFlow-based SDNs (\xref{s:lin}), 
-detail \sys's choice of conflict-resolution operators (\xref{sec:conflict-resolution-operators}),
-the fulfillment of \emph{strict} and \emph{partial} requests, (\xref{sec:strict-partial}),
-and finally, analyze the complexity of the \treelang compiler (\xref{sec:compiler-complexity}).
+We now develop a detailed semantics for HFTs (\Cref{sec:Implementation}),
+describe a compiler which translates HFTs for use in OpenFlow-based SDNs (\Cref{s:lin}), 
+detail \sys's choice of conflict-resolution operators (\Cref{sec:conflict-resolution-operators}),
+the fulfillment of \emph{strict} and \emph{partial} requests, (\Cref{sec:strict-partial}),
+and finally, analyze the complexity of the \treelang compiler (\Cref{sec:compiler-complexity}).
 
 \section{Semantics of \treelang}
 \label{sec:Implementation}
@@ -35,7 +35,7 @@ final action it produces on an individual packet, after it has
 consolidated actions from all policies in the tree.\footnote{This
   semantic model, where the central controller conceptually sees all
   packets, is inspired by Frenetic~\cite{Foster:2010}.}
-In \xref{s:lin}, we compile these policy trees to run efficiently on hardware.
+In \Cref{s:lin}, we compile these policy trees to run efficiently on hardware.
 %Because our switches cannot directly implement these trees, thus in section~\ref{s:lin},
 %we linearize these trees to \emph{network flow tables}, which
 %are easy to use in our runtime to configure switches.
@@ -96,7 +96,7 @@ against policy trees and returns an action.
 For our purposes, packets are 
 a vector of header names and values; we do not match on packets'
 contents. For concreteness, we depict the actions we have implemented in 
-our prototype (\xref{sec:FullSystem}): admission control, reserving a guaranteed
+our prototype (\Cref{sec:FullSystem}): admission control, reserving a guaranteed
 minimum bandwidth (GMB), rate-limiting bandwidth, and $\textbf{0}$, a special ``don't care''
 action.
 
@@ -115,7 +115,7 @@ independent logic. For example, conflicts between parent and child nodes
 may be resolved differently than conflicts between a single node's internal
 policy atoms.
 Therefore, the choice of conflict-resolution operators is a key policy decision.
-Our prototype network (\xref{sec:FullSystem}) provides two default operators;
+Our prototype network (\Cref{sec:FullSystem}) provides two default operators;
 developing and evaluating additional operators, such as operators to
 support priorities across requests, is left as future work.
 
@@ -187,7 +187,7 @@ Our compiler works in two stages. First, we translate policy trees to
 linear matching semantics. Second, we use
 network flow tables to configure a distributed network of switches,
 translating high-level actions such as $\textbf{GMB}(n)$ to low-level
-operations on switches (\xref{sec:NIB}).
+operations on switches (\Cref{sec:NIB}).
 
 \begin{figure}[t]
 
@@ -317,7 +317,8 @@ With this, we prove the compiler correct.
 For all well-formed policy trees, $T$ and packets, $P$, $\mathit{eval}(T, P) =
 \mathit{scan}(\mathit{lin}_T(T), P)$.
 \end{compilercorrect}
-We mechanize all our definitions and proofs using the Coq proof assistant~\cite{coq}. \qed
+We mechanize all our definitions and proofs using the Coq proof
+assistant~\cite{coq}.\footnote{The complete proof is available with \sys's source code: \url{http://github.com/brownsys/pane}} \qed
 
 \section{Conflict-resolution Operators in \sys}
 \label{sec:conflict-resolution-operators}

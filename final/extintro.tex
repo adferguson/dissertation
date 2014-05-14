@@ -32,7 +32,7 @@ NewShare aliceBW for (user=Alice)
 %\end{small}
 Loosely speaking, a \sys share is a set of restricted network privileges
 which can be exercised by specific users; we will refine this definition in
-\xref{sec:ShareTree}.
+\Cref{sec:ShareTree}.
 {\color{red}
 This share can be exercised on packets for which Alice is the sender
 (
@@ -63,7 +63,7 @@ While
 %\end{small}
 currently permits Alice to reserve bandwidth indefinitely,
 a token bucket can be applied to limit
-Alice's reservations (\xref{sec:gmb-requests}).
+Alice's reservations (\Cref{sec:gmb-requests}).
 }
 If Alice attempted to make a second reservation during an overlapping
 time period (\eg, \verb/+25min to +35min/), the \sys controller would
@@ -125,9 +125,9 @@ when a capability is invoked. First, \sys determines whether
 the principal has been granted the appropriate privileges. Second, it
 determines whether previously accepted requests preclude the new
 request from being granted. For the first check, the \sys controller
-maintains a data structure called the \emph{Share Tree} (\xref{sec:ShareTree});
+maintains a data structure called the \emph{Share Tree} (\Cref{sec:ShareTree});
 for the second, a sequence of data structures called the \emph{Policy Trees}
-(\xref{sec:PolicyTrees}). \sys maintains a Policy Tree for each event time point.
+(\Cref{sec:PolicyTrees}). \sys maintains a Policy Tree for each event time point.
 
 As more realistic examples, we have adapted several real applications to use
 \sys. For example, our version of Hadoop uses \sys to create bandwidth
@@ -135,7 +135,7 @@ reservations during the shuffle phase and while replicating data in HDFS,
 and our version of SSHGuard uses \sys to block malicious
 traffic in the network, before it reaches the host's access link.
 We further describe and evaluate these implementations
-in \xref{sec:ApplicationUsage}.
+in \Cref{sec:ApplicationUsage}.
 
 
 \section{The Place for \sys}
@@ -160,17 +160,17 @@ to receive its benefits, participatory networking is not designed for
 any particular application. The primitives, programmability and visibility
 into network state which it provides make it a good substrate for developing 
 systems with a greater focus on particular applications or scenarios, as
-we describe in \xref{sec:building-block}.
+we describe in \Cref{sec:building-block}.
 
 As we saw in the examples above, our initial design implements a first
 come-first serve service model, where the controller accepts or rejects requests
 in a single-threaded fashion. This model is simple to understand and implement,
 and treats all principals equally, as they are assured that
 accepted requests will be implemented (subject to hardware failures, as we
-discuss in \xref{sec:dynamics}). Although we have not
+discuss in \Cref{sec:dynamics}). Although we have not
 implemented them, participatory networks could support priorities across
 principals. We describe how to implement priorities and their potential
-ramifications in \xref{sec:conflict-resolution-operators}.
+ramifications in \Cref{sec:conflict-resolution-operators}.
 
 \subsection{SHOULD WE {\color{red} NAME} THIS SUB-SUB-SECTION?}
 
@@ -181,7 +181,7 @@ such rules, rather than a separate SDN application, so \sys can evaluate
 dynamic requests within the context of both the fixed rules and
 previous dynamic requests. This combination allows the \sys controller to detect,
 resolve, and report conflicts between all rules in the network.
-We expand upon \sys's position in the wider SDN ecosystem in \xref{sec:discussion}.
+We expand upon \sys's position in the wider SDN ecosystem in \Cref{sec:discussion}.
 
 Because network clients may leave the network without notifying the controller,
 there is a potential for accepted requests to become stale if a principal
@@ -199,7 +199,7 @@ The second approach is to restrict a principal's capabilities using a
 token bucket-type model, similar to rate-limiting token buckets used in {\color{red} XXX}.
 This approach is appropriate for privileges which request resources
 shared across many principals, such as for guaranteed bandwidth, as
-we detail in \xref{sec:gmb-requests}. When restricted by a token bucket,
+we detail in \Cref{sec:gmb-requests}. When restricted by a token bucket,
 principals must balance the ``cost'' of their requests against the ``budget''
 provided by their token bucket; we leave the development of future
 models to restrict requests as future work.
