@@ -198,32 +198,31 @@ deficiencies in the current state of SDN development.
 We close with a discussion of these deficiencies relative to traditional networking
 (\Cref{sec:tradeoffs}), and within the modern software-stack itself (\Cref{sec:conclusion}).
 
-\begin{comment}
 
-\vskip 0.5em
+\section{Summary of Contributions}
 
 In summary, this thesis makes the following contributions:
 
 \begin{enumerate}
 
-%\item {\color{red}We develop a uniform abstraction to enable this ``conversation,'' and design
-%a corresponding API.}
+\item We introduce the concept of participatory networking, an interface for
+Software-Defined Networks which allows administrators to safely delegate
+control of the network to end users and their applications~\cite{Ferguson:2012a}.
 
-\item We implement a fully-functioning SDN controller which allows a
-network's administrators to safely delegate their authority using our API.
+\item We present a rich conflict-resolution formalism -- hierarchical flow tables (HFTs) --
+which allows conflicting policies to coexist in the network. HFTs introduce hierarchical
+merge composition~\cite{Ferguson:2012b}, which complements existing
+parallel~\cite{Foster:2010} and sequential~\cite{monsanto++:nsdi13-pyretic} composition.
 
-\item We analyze a previously proposed algorithm for consolidating
-hierarchical policies, and propose a new algorithm that reduces the complexity
-from exponential to polynomial.
+\item We demonstrate, through a participatory networking prototype, four
+instances in which end-user applications benefit from read and write interaction
+with a network's control-plane~\cite{Ferguson:2013sigcomm}.
 
-\item We demonstrate our system's usefulness and
-practicality on a real OpenFlow testbed using 
-microbenchmarks and four real applications enhanced with our API.
-
+\item We present and evaluate Exodus, the first framework for automatic migration of
+existing network configurations to equivalent Software-Defined Networks.
 
 \end{enumerate}
 
-\end{comment}
 
 %\section{Proposed Work}
 %
