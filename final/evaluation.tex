@@ -165,8 +165,8 @@ during the experiment. In the ``Pre'' line, ZooKeeper alone is running in the
 network and no reservations were made using \sys. In the ``Post'' line, we used 
 \verb/iperf/ to generate bi-directional TCP flows over each of the six links 
 directly connected to a host.
-%This traffic totaled 3.3 Gbps, which we found to 
-%be the maximum Open vSwitch could sustain in our setup.
+This traffic totaled 3.3 Gbps, which we found to 
+be the maximum Open vSwitch could sustain in our setup.
 As shown in the 
 figure, this competing traffic dramatically reduced ZooKeeper's performance -- 
 average latency quadrupled from 1.55ms to 6.46ms (we obtained
@@ -296,8 +296,8 @@ Figure~\ref{fig:SwitchOpLatency}(b). However, this average doubles to 3.56 ms
 if queues are created consecutively on the same port (\ie, P1Q1, P1Q2,
 P1Q3, ..., P2Q1, etc.), as shown in Figure~\ref{fig:SwitchOpLatency}(c).
 This shows that an optimized \sys controller must consider the order in
-which switch operations are made to provide the best experience.% for
-%its principals.
+which switch operations are made to provide the best experience for
+its principals.
 
 Together, these results suggest that an
 individual switch can support a minimum of about 200 reservations
@@ -374,10 +374,10 @@ users can do so either proactively or reactively (\cf
 %% are still up for investigation. Nah, this is for another paper, if we can get
 %% a good handle on the question.
 
-%UPnP~\cite{upnp}
-%allows applications to control a network gateway, such as to add a
-%port-forwarding entry to a NAT table, but is restricted to this setting.
-%
+UPnP~\cite{upnp}
+allows applications to control a network gateway, such as to add a
+port-forwarding entry to a NAT table, but is restricted to this setting.
+
 Darwin~\cite{Darwin} introduced a method for
 applications to request use of a network's resources, including
 computation and storage capabilities in network processors. Like
@@ -421,12 +421,12 @@ user-level management and resource arbitration.
 and guarantees about access control and path selection.
 To date, we have focused on mechanisms exposed by OpenFlow
 switches; we expect other mechanisms for network QoS %, 
-%such as those proposed
-%for rate-limiting TCP streams in a distributed fashion~\cite{Raghavan:2007}
+such as those proposed
+for rate-limiting TCP streams in a distributed fashion~\cite{Raghavan:2007}
 could be integrated as well.
-%\sys's primary contribution is a unified framework for exposing these 
-%mechanisms while delegating authority
-%and accounting for resource use within a single network. 
+\sys's primary contribution is a unified framework for exposing these 
+mechanisms while delegating authority
+and accounting for resource use within a single network. 
 
 Like \sys, protocols such as RSVP~\cite{rfc2205} and NSIS~\cite{rfc5974} 
 provide applications with a way to
@@ -546,19 +546,19 @@ In an FML policy,
 conflicts are resolved by a fixed scheme -- deny overrides waypoints,
 and waypoints override allow. By contrast, \sys offers more
 flexible conflict resolution operators.
-%For example, within a single \treelang policy tree,
-%one policy node may specify ``allow overrides deny,'' while another
-%specifies ``deny overrides allow.''
-%
+For example, within a single \treelang policy tree,
+one policy node may specify ``allow overrides deny,'' while another
+specifies ``deny overrides allow.''
+
 FML also allows policies to be prioritized in a linear sequence (a
 \emph{policy cascade}). \sys can also express a prioritized sequence of
 policies, in addition to more general hierarchies.  
-%For example, \sys
-%uses an inverted ``child overrides parent'' conflict-resolution scheme
-%(\Cref{sec:conflict-resolution-operators}) by default, and the author of an individual
-%policy node can adopt a more restrictive ``parent overrides child''
-%scheme. FML does not support both ``child overrides parent'' and
-%``parent overrides child'' schemes simultaneously.
+For example, \sys
+uses an inverted ``child overrides parent'' conflict-resolution scheme
+(\Cref{sec:conflict-resolution-operators}) by default, and the author of an individual
+policy node can adopt a more restrictive ``parent overrides child''
+scheme. FML does not support both ``child overrides parent'' and
+``parent overrides child'' schemes simultaneously.
 
 
 {\color{red}
