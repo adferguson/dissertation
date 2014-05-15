@@ -1148,9 +1148,12 @@ output:4; mod_dl_src=00:00:00:00:00:01; output:3
 However, correct compilation is only possible if the policy composes
 \emph{at most one} such update without match in parallel. Previously, when the original
 header field was available from the exact match, a compiler could simply
-``undo'' the header rewrite with a second modification before proceding with the parallel composition.
-As this feature is necessary for scalable flow tables in OpenFlow-based routers,
-we have added it to NetCore, and believe
+``undo'' the header rewrite with a second modification before proceeding with the parallel composition.
+
+Since routers must rewrite the source MAC address when forwarding packets
+from one subnet to another, composing at most one rewrite action without match
+is necessary for scaling the flow tables effectively in Exodus.
+Therefore, we have added support for this feature to NetCore, and believe
 high-level SDN languages which offer parallel composition should include this
 variant, as we do.
 
