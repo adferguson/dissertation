@@ -3,6 +3,12 @@
 \Chapter{Exodus}{Toward Automatic Migration of Enterprise Network Policies to SDNs}
 \label{sec:introduction}
 
+This chapter considers the problem of migrating distributed network
+configurations to equivalent SDN controller programs, and introduces Exodus, a
+system we developed for performing this conversion.
+In subsequent chapters, we will see how Exodus works by following a detailed example,
+evaluate its capabilities, and reflect on the lessons it offers regarding SDN migration.
+
 Exodus consumes configurations written
 in languages such as Cisco IOS and Linux iptables, and generates programs written in Flowlog, a research
 language for SDN programming~\cite{Nelson:2014flowlog}.  Flowlog
@@ -63,8 +69,7 @@ prototype to cover more features (\Cref{sec:road-ahead}), discuss
 related work (\Cref{sec:relwork}), and conclude.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Language Background}
-\section{Cisco IOS}
+\section{Background: Cisco IOS}
 \label{s:bg:ios}
 
 We begin by introducing the source language, IOS. IOS is expressive:
@@ -109,7 +114,7 @@ destined for \ios{10.1.1.3:25}.
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.95]{figs/orig_network.pdf}
+  \includegraphics[scale=1.25]{figs/orig_network.pdf}
   \caption{Topology for Example Network}
   \label{fig:orig-network}
 \end{figure}
@@ -134,7 +139,7 @@ shares the DMZ subnet ({\small\verb$10.1.1.0/24$}) with the
 a \emph{reflexive} access-list.
 
 % This is our home-grown India talk example, NOT a forum post.
-\noindent\begin{minipage}{\linewidth}
+%\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[float=t,label=lst:initial-example-int,language=IOS,caption=Example IOS Configuration (1)]
 hostname int
 
@@ -157,9 +162,9 @@ access-list 1 permit 192.168.1.1 0.0.255.255
 
 ip route 0.0.0.0 0.0.0.0 10.1.1.2
 \end{lstlisting}
-\end{minipage}
+%\end{minipage}
 
-\noindent\begin{minipage}{\linewidth}
+%\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[float=t,label=lst:initial-example-ext,language=IOS,caption=Example IOS Configuration (2)]
 hostname ext
 
@@ -185,7 +190,7 @@ ip access-list extended 104
   evaluate returnflow
   deny any
 \end{lstlisting}
-\end{minipage}
+%\end{minipage}
 
 Reflexive access lists are used to dynamically open temporary
 firewall holes to permit return packets for approved outgoing flows.
